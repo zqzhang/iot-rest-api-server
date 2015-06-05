@@ -2,14 +2,14 @@ doctype
 
 html
   head
-    title IoT OS
+    title= title
   body
-    h1 IoT OS Management Console
+    h1= title
     p
-      a(href="http://localhost:8001/api/system") System
+      a(href="http://localhost:#{port}/api/system") System
     p
-      a(href="http://localhost:8001/api/oic/d") OIC Devices
+      a(href="http://localhost:#{port}/api/oic/d") OIC Devices
     p
-      a(href="http://localhost:8001/api/oic/p") OIC Platforms
+      a(href="http://localhost:#{port}/api/oic/p") OIC Platforms
     p
-      a(href="http://localhost:8001/api/oic/res") OIC Resources
+      a(href="http://localhost:#{port}/api/oic/res") OIC Resources
