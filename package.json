@@ -1,0 +1,21 @@
+{
+  "name": "iotos-demo-server",
+  "version": "0.0.1",
+  "description": "Node.js Demo Server for IoTOS",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Sakari Poussa",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.12.4",
+    "express": "^4.12.3",
+    "jade": "^1.10.0"
+  },
+  "devDependencies": {
+    "gulp": "^3.8.11",
+    "gulp-nodemon": "^2.0.3",
+  },
+
+}
