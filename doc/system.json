@@ -1,0 +1,49 @@
+{
+  "id": "intel.iotos.rest.api.system#",
+  "$schema": "http://json-schema.org/schema#",
+  "title": "System",
+  "type": "object",
+  "properties": {
+    "hostname": {
+      "type": "string"
+    },
+    "platform": {
+      "type": "string"
+    },
+    "arch": {
+      "type": "string"
+    },
+    "release": {
+      "type": "string"
+    },
+    "uptime": {
+      "type": "number"
+    },
+    "loadavg": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      }
+    },
+    "totalmem": {
+      "type": "string"
+    },
+    "freemem": {
+      "type": "string"
+    },
+    "cpus": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "type": "string"
+          },
+          "speed": {
+            "type": "number"
+          }
+        }
+      }
+    }
+  }
+}

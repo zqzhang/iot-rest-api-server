@@ -1,0 +1,24 @@
+#%RAML 0.8
+title: IOTOS system
+version: v0.1
+mediaType: application/json
+schemas:
+  - System: !include system.json
+
+/system:
+  description: |
+    Interface for system configuration and status
+
+  get:
+    description: |
+      Retrieve resource(s)
+    queryParameters:
+      page:
+        type: integer
+    responses:
+      200:
+        description: |
+          Successfully retrieved resource(s)
+        body:
+          application/json:
+            schema: System
