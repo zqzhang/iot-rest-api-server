@@ -1,2 +1,2 @@
-# iotos-demo-server
-IoTOS Demo Server
+# iotos-api-server
+IoTOS API Server for REST APIs.
