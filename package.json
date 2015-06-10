@@ -1,7 +1,7 @@
 {
-  "name": "iotos-demo-server",
+  "name": "iotos-api-server",
   "version": "0.0.1",
-  "description": "Node.js Demo Server for IoTOS",
+  "description": "Node.js API Server for IoTOS",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
