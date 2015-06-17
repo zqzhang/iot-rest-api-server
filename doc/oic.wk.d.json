@@ -17,10 +17,10 @@
         "icv": {
           "type": "string",
           "description": "ReadOnly, The version of the OIC Server"
-        }
+        },
         "dmv": {
           "type": "string",
-          "description": "ReadOnly, The spec version of the vertical specification"
+          "description": "ReadOnly, The spec version of the vertical specification",
           "format": "csv"
         }
       }

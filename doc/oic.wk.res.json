@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-v4/schema#",
-  "id": "http://openinterconnect.org/schemas/oic.wk.res.json/"
+  "id": "http://openinterconnect.org/schemas/oic.wk.res.json/",
   "definitions": {
     "oic.res-links.json": {
       "type": "object",
