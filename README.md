@@ -17,21 +17,21 @@ In IoT OS the API server should be started automatically once properly integrate
 
 ```/api/install```
 
-``/api/oic``
+```/api/oic```
 
 ## API documentation
 
-The REST APIs are documented in the ```/doc`` folder using the [RAML](http://raml.org/) modeling language. You also need the ```raml2html```node module to produce the documentation:
+The REST APIs are documented in the /doc folder using the [RAML](http://raml.org/) modeling language. You also need the ```raml2html```node module to produce the documentation:
 
-``npm install -g raml2html``
+```npm install -g raml2html```
 
 The API documentation can be generated 
 
 ```raml2html doc/name-of-the-raml-file > api.html```
 
-For example,
+For example
 
- ```raml2html doc/oic.wk.res.raml > oic-res.html```.
+ ```raml2html doc/oic.wk.res.raml > oic-res.html```
 
 The ```.html``` file can be then opened by a browser. The ```.html```file contains the full documentation of the REST API including all the REST methods (GET, POST, DELETE, etc) supported, query parameters (like ?id=foo) and the JSON formats in each API.
 
