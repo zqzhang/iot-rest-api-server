@@ -24,6 +24,9 @@ app.use(bodyParser.json());
 appRouter = require('./routes/appRoutes')(appfw);
 app.use('/api/apps', appRouter);
 
+installRouter = require('./routes/installRoutes')(appfw);
+app.use('/api/install', installRouter);
+
 systemRouter = require('./routes/systemRoutes')();
 app.use('/api/system', systemRouter);
 
