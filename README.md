@@ -11,13 +11,13 @@ In IoT OS the API server should be started automatically once properly integrate
 
 ## API End Points
 
-```/api/system```
+/api/system
 
-```/api/apps```
+/api/apps
 
-```/api/install```
+/api/install
 
-```/api/oic```
+/api/oic
 
 ## API documentation
 
