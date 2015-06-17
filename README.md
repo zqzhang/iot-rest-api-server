@@ -9,6 +9,10 @@ This project is part of the meta-iot-web IoT OS Yocto layer.
 ## Usage
 In IoT OS the API server should be started automatically once properly integrated. The default port is: 8000.
 
+If you need to start the API server manualy, locate the directory where it is installed and run:
+
+```node index.js```
+
 ## API End Points
 
 /api/system
