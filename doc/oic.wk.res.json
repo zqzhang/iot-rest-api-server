@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-v4/schema#",
+  "id": "http://openinterconnect.org/schemas/oic.wk.res.json/"
+  "definitions": {
+    "oic.res-links.json": {
+      "type": "object",
+      "properties": {
+        "n": {
+          "type": "string",
+          "description": "Readonly, Human friendly name"
+        },
+        "di": {
+          "description": "The device identifier as indicated by the /oic/d resource of the device",
+          "type": "string",
+          "format": "UUID"
+        },
+        "links": {
+          "type": "array",
+          "items": {
+            "$ref": "oic.web-link.json#"
+          }
+        }
+      }
+    }
+  },
+  "description": "The list of resources expressed as web links",
+  "type": "array",
+  "items": {
+    "$ref": "#/definitions/oic.res-links.json"
+  }
+}
