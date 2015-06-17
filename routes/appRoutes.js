@@ -1,73 +1,48 @@
 var express = require('express');
 
-var routes = function(App) {
+var routes = function(AppFW) {
   var router = express.Router();
 
   router.route('/')
-    .post(function(req, res) {
-      var app = new App(req.body);
-      app.save();
-      console.log(app);
-      res.status(201).send(app);
-
-    })
     .get(function(req, res) {
-      var query = {};
-
-      if (req.query.genre)
-        query.genre = req.query.genre;
-
-      App.find(query, function(err, app) {
-        if(err)
-          res.status(500).send(err);
-        else
-          res.json(app);
-      });
+      var json = {"description": "List all apps", "note": "Not implemented yet."}
+      console.log("GET " + req.path);
+      res.json(json);
+    })
+    .post(function(req, res) {
+      var json = {"description": "Start all apps", "note": "Not implemented yet."}
+      console.log("POST" + req.path);
+      res.status(201).send(json);
+    })
+    .put(function(req, res) {
+      var json = {"description": "Restart all apps", "note": "Not implemented yet."}
+      console.log("POST" + req.path);
+      res.status(201).send(json);
+    })
+    .delete(function(req, res) {
+      var json = {"description": "Stop all apps", "note": "Not implemented yet."}
+      console.log("POST" + req.path);
+      res.status(201).send(json);
     });
 
   router.use('/:appId', function(req, res, next) {
-    App.findById(req.params.appId, function(err, app) {
-      if (err) {
-        res.status(500).send(err);
-      }
-      else if(app) {
-        req.app = app;
-        next();
-      }
-      else {
-        res.status(404).send('no app found');
-      }
-    });
+    var app = {"id": req.params.appId, "description": "Single App", "note": "Not implemented yet."}
+    req.app = app;
+    next();
   });
 
   router.route('/:appId')
     .get(function(req, res) {
       res.json(req.app);
     })
-    .put(function(req, res) {
-      req.app.title = req.body.title;
-      req.app.author = req.body.author;
-      req.app.genre = req.body.genre;
-      req.app.read = req.body.read;
-      req.app.save(function(err) {
-        if (err)
-          res.status(500).send(err);
-        else
-          res.json(req.app);
-      });
+    .post(function(req, res) {
+      res.json(req.app);
     })
-    .patch(function(req, res) {
-      if(req.body._id)
-        delete req.body._id;
-      for (var p in req.body) {
-        req.app[p] = req.body[p];
-      }
-      req.app.save(function(err) {
-        if (err)
-          res.status(500).send(err);
-        else
-          res.json(req.app);
-      });
+    .put(function(req, res) {
+      res.json(req.app);
+    })
+    .delete(function(req, res) {
+      res.json(req.app);
     });
 
     return router;

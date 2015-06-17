@@ -4,6 +4,7 @@ var bodyParser = require('body-parser');
 var util = require('util');
 
 var iotivity = require('iotivity');
+var appfw = {}; //require('iot-appfw');
 
 iotivity.OCInit( null, 0, iotivity.OCMode.OC_CLIENT );
 
@@ -20,8 +21,8 @@ var port = process.env.PORT || 8000;
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json());
 
-//appRouter = require('./routes/appRoutes')();
-//app.use('/api/apps', appRouter);
+appRouter = require('./routes/appRoutes')(appfw);
+app.use('/api/apps', appRouter);
 
 systemRouter = require('./routes/systemRoutes')();
 app.use('/api/system', systemRouter);
