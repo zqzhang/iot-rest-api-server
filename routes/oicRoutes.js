@@ -18,7 +18,8 @@ var routes = function(iotivity) {
         iotivity.OCQualityOfService.OC_HIGH_QOS,
         function( handle, response ) {
           console.log( response );
-          res.json(response);
+          var json = JSON.parse(response.resJSONPayload);
+          res.send(json.oic[0].rep);
           return iotivity.OCStackApplicationResult.OC_STACK_DELETE_TRANSACTION;
         },
         null,
@@ -39,7 +40,8 @@ var routes = function(iotivity) {
         iotivity.OCQualityOfService.OC_HIGH_QOS,
         function( handle, response ) {
           console.log( response );
-          res.json(response);
+          var json = JSON.parse(response.resJSONPayload);
+          res.send(json.oic[0].rep);
           return iotivity.OCStackApplicationResult.OC_STACK_DELETE_TRANSACTION;
         },
         null,
@@ -60,7 +62,8 @@ var routes = function(iotivity) {
         iotivity.OCQualityOfService.OC_HIGH_QOS,
         function( handle, response ) {
           console.log( response );
-          res.json(response);
+          var json = JSON.parse(response.resJSONPayload);
+          res.send(json.oic[0]);
           return iotivity.OCStackApplicationResult.OC_STACK_DELETE_TRANSACTION;
         },
         null,
