@@ -34,7 +34,7 @@ oicRouter = require('./routes/oicRoutes')(iotivity);
 app.use('/api/oic', oicRouter);
 
 app.get('/', function(req, res) {
-  res.render('main', {title: "IoT OS API Server", port: port});
+  res.render('main', {title: "IoT OS API Server", host: req.hostname, port: port});
 });
 
 app.listen(port, function() {
