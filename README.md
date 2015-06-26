@@ -48,15 +48,15 @@ The following examples assumes your IoT OS enabled device runs on IP address: 19
 
 Open the test UI from your browser:
 
-```http://192.168.0.1:8000/```
+http://192.168.0.1:8000/
 
 Get the system status:
 
-```http://192.168.0.1:8000/api/system```
+http://192.168.0.1:8000/api/system
 
 Discover all the OIC enabled devices on the local network:
 
-```http://192.168.0.1:8000/api/oic/res```
+http://192.168.0.1:8000/api/oic/res
 
 See the more detailed API documentation in the chapter above.
 
