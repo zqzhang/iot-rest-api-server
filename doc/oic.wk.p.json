@@ -1,0 +1,60 @@
+{
+  "$schema": "http://json-schemas.org/schema#",
+  "id": "http://openinterconnect.org/oic.wk.p#",
+  "definitions": {
+    "oic.wk.p": {
+      "type": "object",
+      "properties": {
+        "pi": {
+          "type": "string",
+          "description": "Platform Identifier"
+        },
+        "mnmn": {
+          "type": "string",
+          "description": "Name of manufacturer"
+        },
+        "mnml": {
+          "type": "string",
+          "description": "URL to manufacturer "
+        },
+        "mnmo": {
+          "type": "string",
+          "description": "Model number as designated by manufacturer"
+        },
+        "mndt": {
+          "type": "string",
+          "description": "Manufacturing date of device"
+        },
+        "mnpv": {
+          "type": "string",
+          "description": "Version of platform"
+        },
+        "mnos": {
+          "type": "string",
+          "description": "Version of platform resident OS "
+        },
+        "mnhw": {
+          "type": "string",
+          "description": "Version of platform hardware"
+        },
+        "mnfv": {
+          "type": "string",
+          "description": "Readonly, Human friendly name"
+        },
+        "mnsl": {
+          "type": "string",
+          "description": "URL that points to support information from manufacturer"
+        },
+        "st": {
+          "type": "string",
+          "description": "Reference time for the device"
+        }
+      }
+    }
+  },
+  "type": "object",
+  "allOf": [
+    { "$ref": "#/definitions/oic.wk.p" }
+  ],
+  "required": [ "pi", "mnmn" ]
+}
