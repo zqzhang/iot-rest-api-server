@@ -9,10 +9,11 @@
   "author": "Sakari Poussa",
   "license": "MIT",
   "dependencies": {
-    "iotivity": "git@github.com:otcshare/iotivity-node.git",
+    "iotivity": "git@github.com:otcshare/iotivity-node.git#dev",
     "body-parser": "^1.12.4",
     "express": "^4.12.3",
-    "jade": "^1.10.0"
+    "jade": "^1.10.0",
+    "uuid": "^2.0.1"
   },
   "devDependencies": {
     "gulp": "^3.8.11",

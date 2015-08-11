@@ -6,8 +6,8 @@ var util = require('util');
 var iotivity = require('iotivity');
 var appfw = {}; //require('iot-appfw');
 
-iotivity.OCInit( null, 0, iotivity.OCMode.OC_CLIENT );
-
+result = iotivity.OCInit( null, 0, iotivity.OCMode.OC_CLIENT );
+console.log("OCInit: " + result);
 intervalId = setInterval( function() {
   iotivity.OCProcess();
 }, 100 );

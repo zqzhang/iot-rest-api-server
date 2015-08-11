@@ -1,5 +1,6 @@
 var express = require('express');
 var os = require('os');
+var OIC = require('../oic/oic');
 
 var routes = function(iotivity) {
   var router = express.Router();
@@ -10,16 +11,15 @@ var routes = function(iotivity) {
 
       iotivity.OCDoResource(
         handle,
-        iotivity.OCMethod.OC_REST_GET,
+        iotivity.OCMethod.OC_REST_DISCOVER,
         "/oic/p",
         null,
         null,
-        iotivity.OCConnectivityType.OC_ALL,
+        iotivity.OCConnectivityType.CT_DEFAULT,
         iotivity.OCQualityOfService.OC_HIGH_QOS,
         function( handle, response ) {
-          console.log( response );
-          var json = JSON.parse(response.resJSONPayload);
-          res.send(json.oic[0].rep);
+          var json = OIC.parseP(response.payload);
+          res.send(json);
           return iotivity.OCStackApplicationResult.OC_STACK_DELETE_TRANSACTION;
         },
         null,
@@ -32,16 +32,15 @@ var routes = function(iotivity) {
 
       iotivity.OCDoResource(
         handle,
-        iotivity.OCMethod.OC_REST_GET,
+        iotivity.OCMethod.OC_REST_DISCOVER,
         "/oic/d",
         null,
         null,
-        iotivity.OCConnectivityType.OC_ALL,
+        iotivity.OCConnectivityType.CT_DEFAULT,
         iotivity.OCQualityOfService.OC_HIGH_QOS,
         function( handle, response ) {
-          console.log( response );
-          var json = JSON.parse(response.resJSONPayload);
-          res.send(json.oic[0].rep);
+          var json = OIC.parseD(response.payload);
+          res.send(json);
           return iotivity.OCStackApplicationResult.OC_STACK_DELETE_TRANSACTION;
         },
         null,
@@ -54,16 +53,15 @@ var routes = function(iotivity) {
 
       iotivity.OCDoResource(
         handle,
-        iotivity.OCMethod.OC_REST_GET,
+        iotivity.OCMethod.OC_REST_DISCOVER,
         "/oic/res",
         null,
         null,
-        iotivity.OCConnectivityType.OC_ALL,
+        iotivity.OCConnectivityType.CT_DEFAULT,
         iotivity.OCQualityOfService.OC_HIGH_QOS,
         function( handle, response ) {
-          console.log( response );
-          var json = JSON.parse(response.resJSONPayload);
-          res.send(json.oic[0]);
+          var json = OIC.parseRes(response.payload);
+          res.send(json);
           return iotivity.OCStackApplicationResult.OC_STACK_DELETE_TRANSACTION;
         },
         null,
