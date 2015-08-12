@@ -4,10 +4,16 @@ var OIC = require('../oic/oic');
 
 var routes = function(iotivity) {
   var router = express.Router();
+  var timeoutValue = 5000; // 5s
+  var timeoutStatusCode = 504; // Gateway Timeout
 
   router.route('/p')
     .get(function(req, res) {
       var handle = {};
+
+      res.setTimeout(timeoutValue, function() {
+        res.status(timeoutStatusCode).end();
+      });
 
       iotivity.OCDoResource(
         handle,
@@ -30,6 +36,10 @@ var routes = function(iotivity) {
     .get(function(req, res) {
       var handle = {};
 
+      res.setTimeout(timeoutValue, function() {
+        res.status(timeoutStatusCode).end();
+      });
+
       iotivity.OCDoResource(
         handle,
         iotivity.OCMethod.OC_REST_DISCOVER,
@@ -50,6 +60,10 @@ var routes = function(iotivity) {
   router.route('/res')
     .get(function(req, res) {
       var handle = {};
+
+      res.setTimeout(timeoutValue, function() {
+        res.status(timeoutStatusCode).end();
+      });
 
       iotivity.OCDoResource(
         handle,
