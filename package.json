@@ -10,7 +10,7 @@
   "author": "Sakari Poussa",
   "license": "MIT",
   "dependencies": {
-    "iotivity": "https://github.com:otcshare/iotivity-node.git#dev",
+    "iotivity": "https://github.com/otcshare/iotivity-node.git#dev",
     "body-parser": "^1.12.4",
     "express": "^4.12.3",
     "jade": "^1.10.0",
