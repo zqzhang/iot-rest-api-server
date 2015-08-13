@@ -2,6 +2,7 @@
   "name": "iotos-api-server",
   "version": "0.0.1",
   "description": "Node.js API Server for IoTOS",
+  "repository": "https://github.com:otcshare/iotos-api-server",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -9,7 +10,7 @@
   "author": "Sakari Poussa",
   "license": "MIT",
   "dependencies": {
-    "iotivity": "git@github.com:otcshare/iotivity-node.git#dev",
+    "iotivity": "https://github.com:otcshare/iotivity-node.git#dev",
     "body-parser": "^1.12.4",
     "express": "^4.12.3",
     "jade": "^1.10.0",
