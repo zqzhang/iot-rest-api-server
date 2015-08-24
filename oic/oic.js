@@ -34,13 +34,32 @@ exports.parseRes = function(payload) {
 }
 
 exports.parseD = function(payload) {
-  var result = [];
-  var json = JSON.stringify(result);
+  var o = {};
+
+  console.log(payload);
+
+  if (typeof payload.sid != "undefined")
+    o.di = uuid.unparse(payload.sid);
+
+  if (typeof payload.deviceName != "undefined")
+    o.m = payload.deviceName;
+
+  if (typeof payload.specVersion != "undefined")
+    o.icv = payload.specVersion;
+
+  if (typeof payload.dataModelVersion != "undefined")
+    o.dmv = payload.dataModelVersion;
+
+  var json = JSON.stringify(o);
+  console.log(json);
+
   return json;
 }
 
 exports.parseP = function(payload) {
   var result = [];
+
+  console.log(payload);
   var json = JSON.stringify(result);
   return json;
 }
