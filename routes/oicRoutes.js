@@ -14,7 +14,7 @@ var routes = function(iotivity) {
       res.setTimeout(timeoutValue, function() {
         res.status(timeoutStatusCode).end();
       });
-
+      console.log("Request: " + req.path)
       iotivity.OCDoResource(
         handle,
         iotivity.OCMethod.OC_REST_DISCOVER,
@@ -25,6 +25,7 @@ var routes = function(iotivity) {
         iotivity.OCQualityOfService.OC_HIGH_QOS,
         function( handle, response ) {
           var json = OIC.parseP(response.payload);
+          res.setHeader('Content-Type', 'application/json');
           res.send(json);
           return iotivity.OCStackApplicationResult.OC_STACK_DELETE_TRANSACTION;
         },
@@ -39,6 +40,7 @@ var routes = function(iotivity) {
       res.setTimeout(timeoutValue, function() {
         res.status(timeoutStatusCode).end();
       });
+      console.log("Request: " + req.path)
 
       iotivity.OCDoResource(
         handle,
@@ -50,6 +52,7 @@ var routes = function(iotivity) {
         iotivity.OCQualityOfService.OC_HIGH_QOS,
         function( handle, response ) {
           var json = OIC.parseD(response.payload);
+          res.setHeader('Content-Type', 'application/json');
           res.send(json);
           return iotivity.OCStackApplicationResult.OC_STACK_DELETE_TRANSACTION;
         },
@@ -64,6 +67,7 @@ var routes = function(iotivity) {
       res.setTimeout(timeoutValue, function() {
         res.status(timeoutStatusCode).end();
       });
+      console.log("Request: " + req.path)
 
       iotivity.OCDoResource(
         handle,
@@ -75,6 +79,7 @@ var routes = function(iotivity) {
         iotivity.OCQualityOfService.OC_HIGH_QOS,
         function( handle, response ) {
           var json = OIC.parseRes(response.payload);
+          res.setHeader('Content-Type', 'application/json');
           res.send(json);
           return iotivity.OCStackApplicationResult.OC_STACK_DELETE_TRANSACTION;
         },
