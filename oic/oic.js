@@ -57,9 +57,46 @@ exports.parseD = function(payload) {
 }
 
 exports.parseP = function(payload) {
-  var result = [];
+  var o = {};
 
   console.log(payload);
-  var json = JSON.stringify(result);
+  var info = payload.info;
+
+  if (typeof info.platformID != "undefined")
+    o.pi = info.platformID;
+
+  if (typeof info.manufacturerName != "undefined")
+    o.mnmn = info.manufacturerName;
+
+  if (typeof info.manufacturerUrl != "undefined")
+    o.mnml = info.manufacturerUrl;
+
+  if (typeof info.modelNumber != "undefined")
+    o.mnmo = info.modelNumber;
+
+  if (typeof info.dateOfManufacture != "undefined")
+    o.mndt = info.dateOfManufacture;
+
+  if (typeof info.platformVersion != "undefined")
+    o.mnpv = info.platformVersion;
+
+  if (typeof info.operatingSystemVersion != "undefined")
+    o.mnos = info.operatingSystemVersion;
+
+  if (typeof info.hardwareVersion != "undefined")
+    o.mnhw = info.hardwareVersion;
+
+  if (typeof info.firmwareVersion != "undefined")
+    o.mnfv = info.firmwareVersion;
+
+  if (typeof info.supportUrl != "undefined")
+    o.mnsl = info.supportUrl;
+
+  if (typeof info.systemTime != "undefined")
+    o.st = info.systemTime;
+
+  var json = JSON.stringify(o);
+  console.log(json);
+
   return json;
 }
