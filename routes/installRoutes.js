@@ -1,13 +1,15 @@
 var express = require('express');
+var appsUtils = require('../appfw/appfw');
 
 var routes = function(AppFW) {
   var router = express.Router();
 
   router.route('/')
     .get(function(req, res) {
-      var json = {"description": "List all installed apps", "note": "Not implemented yet."}
-      console.log("GET " + req.path);
-      res.json(json);
+      AppFW.ListAllApplications(function(id, status, msg, apps) {
+        var json = appsUtils.parseRes(id, status, msg, apps);
+        res.send(json);
+      })
     })
     .post(function(req, res) {
       var json = {"description": "Update all installed apps", "note": "Not implemented yet."}
