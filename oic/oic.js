@@ -1,5 +1,49 @@
 uuid = require('uuid');
 
+var iotivity = require('iotivity');
+
+exports.init = function() {
+  var result = iotivity.OCInit(null, 0, iotivity.OCMode.OC_CLIENT);
+  console.log("OCInit: " + result);
+  intervalId = setInterval( function() {
+    iotivity.OCProcess();
+  }, 100 );  
+}
+
+exports.doDiscover = function(handle, uri, callback) {
+  var rc = iotivity.OCDoResource(
+              handle,
+              iotivity.OCMethod.OC_REST_DISCOVER,
+              uri,
+              null,
+              null,
+              iotivity.OCConnectivityType.CT_DEFAULT,
+              iotivity.OCQualityOfService.OC_HIGH_QOS,
+              callback,
+              null,
+              0);
+  return rc;
+}
+
+exports.doGet = function(handle, uri, connType, callback) {
+  var rc = iotivity.OCDoResource(
+              handle,
+              iotivity.OCMethod.OC_REST_GET,
+              uri,
+              null,
+              null,
+              connType,
+              iotivity.OCQualityOfService.OC_HIGH_QOS,
+              callback,
+              null,
+              0);
+  return rc;
+}
+
+exports.deleteTransaction = function() {
+  return iotivity.OCStackApplicationResult.OC_STACK_DELETE_TRANSACTION;
+}
+
 exports.parseRes = function(payload) {
   var result = [];
   var resources = payload.resources;
@@ -98,5 +142,18 @@ exports.parseP = function(payload) {
   var json = JSON.stringify(o);
   console.log(json);
 
+  return json;
+}
+
+exports.parseIP = function(addr) {
+  return "10.211.55.3"
+}
+
+exports.parseGet = function(payload) {
+  var o = payload;
+
+  console.log(payload);
+  var json = JSON.stringify(o);
+  console.log(json);
   return json;
 }

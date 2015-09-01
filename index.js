@@ -3,14 +3,8 @@ var path = require('path');
 var bodyParser = require('body-parser');
 var util = require('util');
 
-var iotivity = require('iotivity');
+var oic = require('./oic/oic');
 var appfw = {}; //require('iot-appfw');
-
-result = iotivity.OCInit( null, 0, iotivity.OCMode.OC_CLIENT );
-console.log("OCInit: " + result);
-intervalId = setInterval( function() {
-  iotivity.OCProcess();
-}, 100 );
 
 var app = express();
 app.set('view engine', 'jade');
@@ -30,7 +24,7 @@ app.use('/api/install', installRouter);
 systemRouter = require('./routes/systemRoutes')();
 app.use('/api/system', systemRouter);
 
-oicRouter = require('./routes/oicRoutes')(iotivity);
+oicRouter = require('./routes/oicRoutes')(oic);
 app.use('/api/oic', oicRouter);
 
 app.get('/', function(req, res) {
