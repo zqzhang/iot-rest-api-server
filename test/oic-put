@@ -1,0 +1,2 @@
+ curl -X PUT --noproxy "*" -H "Content-Type: application/json" -T put-light-values.json http://localhost:8001/api/oic/a/light
+ echo "--done"

@@ -1,0 +1,2 @@
+curl --noproxy "*" http://localhost:8001/api/oic/a/light
+echo "--done"
