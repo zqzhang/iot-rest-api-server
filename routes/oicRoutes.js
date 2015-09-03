@@ -81,7 +81,32 @@ var routes = function(OIC) {
       }
 
       OIC.doDiscover(handle, "/oic/res", callback);
-    });
+    })
+    .put(function(req, res) {
+      var handle = {}, serverIP = null, serverPort = null, connType = null;
+
+      var callback = function(handle, response) {
+        var json = OIC.parseRes(response.payload);
+        serverIP = OIC.parseIP(response.addr.addr);
+        serverPort = response.addr.port;
+        connType = response.connType;
+
+        var requestURI = "coap://" + serverIP + ":" + serverPort + req.url;
+        var payload = {"type":4}
+        payload.values = req.body;
+        console.log("PUT payload: " + JSON.stringify(payload));
+        rc = OIC.doPut(handle, requestURI, connType, payload, function(handle, response) {
+          var json = OIC.parseGet(response.payload);
+          res.setHeader('Content-Type', 'application/json');
+          res.send(json);
+          return OIC.deleteTransaction()});
+
+        return OIC.deleteTransaction();
+      }
+
+      OIC.doDiscover(handle, "/oic/res", callback);
+    })
+    ;
 
   return router;
 };

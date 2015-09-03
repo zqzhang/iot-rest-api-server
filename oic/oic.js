@@ -40,6 +40,21 @@ exports.doGet = function(handle, uri, connType, callback) {
   return rc;
 }
 
+exports.doPut = function(handle, uri, connType, payload, callback) {
+  var rc = iotivity.OCDoResource(
+              handle,
+              iotivity.OCMethod.OC_REST_PUT,
+              uri,
+              null,
+              payload,
+              connType,
+              iotivity.OCQualityOfService.OC_HIGH_QOS,
+              callback,
+              null,
+              0);
+  return rc;
+}
+
 exports.deleteTransaction = function() {
   return iotivity.OCStackApplicationResult.OC_STACK_DELETE_TRANSACTION;
 }
@@ -152,8 +167,13 @@ exports.parseIP = function(addr) {
 exports.parseGet = function(payload) {
   var o = payload;
 
-  console.log(payload);
+  if (typeof payload != "undefined")
+    console.log(payload);
+
   var json = JSON.stringify(o);
-  console.log(json);
+
+  if (typeof payload != "undefined")
+    console.log(json);
+
   return json;
 }
