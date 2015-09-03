@@ -70,7 +70,7 @@ var routes = function(OIC) {
         serverPort = response.addr.port;
         connType = response.connType;
 
-        var requestURI = "coap://" + serverIP + ":" + serverPort + req.path;
+        var requestURI = "coap://" + serverIP + ":" + serverPort + req.url;
         rc = OIC.doGet(handle, requestURI, connType, function(handle, response) {
           var json = OIC.parseGet(response.payload);
           res.setHeader('Content-Type', 'application/json');
