@@ -161,7 +161,10 @@ exports.parseP = function(payload) {
 }
 
 exports.parseIP = function(addr) {
-  return "10.211.55.3"
+  var result = "";
+  for (var i=0; i < addr.length && addr[i] != 0; i++)
+    result += String.fromCharCode(addr[i]);
+  return result;
 }
 
 exports.parseGet = function(payload) {
