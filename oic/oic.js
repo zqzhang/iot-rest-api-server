@@ -25,12 +25,12 @@ exports.doDiscover = function(handle, uri, callback) {
   return rc;
 }
 
-exports.doGet = function(handle, uri, connType, callback) {
+exports.doGet = function(handle, uri, destination, connType, callback) {
   var rc = iotivity.OCDoResource(
               handle,
               iotivity.OCMethod.OC_REST_GET,
               uri,
-              null,
+              destination,
               null,
               connType,
               iotivity.OCQualityOfService.OC_HIGH_QOS,
@@ -40,12 +40,12 @@ exports.doGet = function(handle, uri, connType, callback) {
   return rc;
 }
 
-exports.doPut = function(handle, uri, connType, payload, callback) {
+exports.doPut = function(handle, uri, destination, connType, payload, callback) {
   var rc = iotivity.OCDoResource(
               handle,
               iotivity.OCMethod.OC_REST_PUT,
               uri,
-              null,
+              destination,
               payload,
               connType,
               iotivity.OCQualityOfService.OC_HIGH_QOS,

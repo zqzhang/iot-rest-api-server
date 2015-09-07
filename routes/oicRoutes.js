@@ -62,16 +62,10 @@ var routes = function(OIC) {
 
   router.route('/:id/:resource')
     .get(function(req, res) {
-      var handle = {}, serverIP = null, serverPort = null, connType = null;
+      var handle = {};
      
       var callback = function(handle, response) {
-        var json = OIC.parseRes(response.payload);
-        serverIP = OIC.parseIP(response.addr.addr);
-        serverPort = response.addr.port;
-        connType = response.connType;
-
-        var requestURI = "coap://" + serverIP + ":" + serverPort + req.url;
-        rc = OIC.doGet(handle, requestURI, connType, function(handle, response) {
+        var rc = OIC.doGet(handle, req.url, response.addr, response.connType, function(handle, response) {
           var json = OIC.parseGet(response.payload);
           res.setHeader('Content-Type', 'application/json');
           res.send(json);
@@ -83,19 +77,12 @@ var routes = function(OIC) {
       OIC.doDiscover(handle, "/oic/res", callback);
     })
     .put(function(req, res) {
-      var handle = {}, serverIP = null, serverPort = null, connType = null;
+      var handle = {};
 
       var callback = function(handle, response) {
-        var json = OIC.parseRes(response.payload);
-        serverIP = OIC.parseIP(response.addr.addr);
-        serverPort = response.addr.port;
-        connType = response.connType;
-
-        var requestURI = "coap://" + serverIP + ":" + serverPort + req.url;
         var payload = {"type":4}
         payload.values = req.body;
-        console.log("PUT payload: " + JSON.stringify(payload));
-        rc = OIC.doPut(handle, requestURI, connType, payload, function(handle, response) {
+        var rc = OIC.doPut(handle, req.url, response.addr, response.connType, payload, function(handle, response) {
           var json = OIC.parseGet(response.payload);
           res.setHeader('Content-Type', 'application/json');
           res.send(json);
