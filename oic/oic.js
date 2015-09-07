@@ -40,6 +40,21 @@ exports.doGet = function(handle, uri, destination, connType, callback) {
   return rc;
 }
 
+exports.doObs = function(handle, uri, destination, connType, callback) {
+  var rc = iotivity.OCDoResource(
+              handle,
+              iotivity.OCMethod.OC_REST_OBSERVE,
+              uri,
+              destination,
+              null,
+              connType,
+              iotivity.OCQualityOfService.OC_HIGH_QOS,
+              callback,
+              null,
+              0);
+  return rc;
+}
+
 exports.doPut = function(handle, uri, destination, connType, payload, callback) {
   var rc = iotivity.OCDoResource(
               handle,
@@ -57,6 +72,10 @@ exports.doPut = function(handle, uri, destination, connType, payload, callback) 
 
 exports.deleteTransaction = function() {
   return iotivity.OCStackApplicationResult.OC_STACK_DELETE_TRANSACTION;
+}
+
+exports.keepTransaction = function() {
+  return iotivity.OCStackApplicationResult.OC_STACK_KEEP_TRANSACTION;
 }
 
 exports.parseRes = function(payload) {
