@@ -38,7 +38,7 @@ var routes = function(OIC) {
         res.send(json);
         return OIC.deleteTransaction();
       }
-
+      console.log("doDiscover: /oic/d");
       OIC.doDiscover(handle, "/oic/d", callback);
     });
 
@@ -56,7 +56,7 @@ var routes = function(OIC) {
         res.send(json);
         return OIC.deleteTransaction();
       }
-
+      console.log("doDiscover: /oic/res");
       OIC.doDiscover(handle, "/oic/res", callback);
     });
 
@@ -75,12 +75,26 @@ var routes = function(OIC) {
 
       if (req.obs == true) {
         res.setHeader('Content-Type', 'application/json');
-        callback = function(handle, response) {
-          var rc = OIC.doObs(handle, req.url, response.addr, response.connType, function(handle, response) {
-            var json = OIC.parseGet(response.payload);
-            res.write(json);
-            return OIC.keepTransaction()});
 
+        req.on('close', function() {
+          console.log("Client: close");
+          req.obs = false;
+        });
+
+        var observer = function(handle, response) {
+            console.log("OBS: " + req.obs + ", handle: " + handle);
+            if (req.obs == true) {
+              var json = OIC.parseGet(response.payload);
+              res.write(json);
+              return OIC.keepTransaction();
+            } else {
+              OIC.doCancel(handle);
+              return OIC.deleteTransaction();
+            }
+        }
+
+        callback = function(handle, response) {
+          var rc = OIC.doObs(handle, req.url, response.addr, response.connType, observer);
           return OIC.deleteTransaction();
         }
       }
@@ -95,7 +109,7 @@ var routes = function(OIC) {
           return OIC.deleteTransaction();
         }
       }
-
+      console.log("doDiscover: /oic/res (for get)");
       OIC.doDiscover(handle, "/oic/res", callback);
     })
     .put(function(req, res) {

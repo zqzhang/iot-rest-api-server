@@ -70,6 +70,14 @@ exports.doPut = function(handle, uri, destination, connType, payload, callback) 
   return rc;
 }
 
+exports.doCancel = function(handle) {
+  var rc = iotivity.OCCancel(
+              handle,
+              iotivity.OCQualityOfService.OC_HIGH_QOS,
+              []);
+  return rc;
+}
+
 exports.deleteTransaction = function() {
   return iotivity.OCStackApplicationResult.OC_STACK_DELETE_TRANSACTION;
 }
