@@ -6,13 +6,13 @@ API_SERVER_HOST - Port where API server is running (default: 8000)
 Examples:
 
 # Resource discovery (/oic/res)
-./oic-get "/oic/res"
+./oic-get "/res"
 
 # Device discovery discovery (/oic/d)
-./oic-get "/oic/d"
+./oic-get "/d"
 
 # Platform discovery (/oic/p)
-./oic-get "/oic/p"
+./oic-get "/p"
 
 # Resource get (/a/light)
 ./oic-get "/a/light"
