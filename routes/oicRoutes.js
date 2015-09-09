@@ -61,14 +61,14 @@ var routes = function(OIC) {
     });
 
   router.param('resource', function(req, res, next, resource) {
-    if (resource.match(";obs")) {
+    if (req.url.match(";obs")) {
       req.url = req.url.slice(0, -4);
       req.obs = true;
     }
     next();
   });
 
-  router.route('/:id/:resource')
+  router.route('/:resource(([a-zA-Z0-9/]+)(;obs)?)')
     .get(function(req, res) {
       var handle = {};
       var callback = null;
