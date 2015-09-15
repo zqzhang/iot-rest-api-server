@@ -5,6 +5,7 @@ var routes = function(OIC) {
   var router = express.Router();
   var timeoutValue = 5000; // 5s
   var timeoutStatusCode = 504; // Gateway Timeout
+  var notFoundStatusCode = 404; // Not found
 
   OIC.init();
 
@@ -17,8 +18,10 @@ var routes = function(OIC) {
       });
       var callback = function(handle, response) {
         var json = OIC.parseP(response.payload);
-        res.setHeader('Content-Type', 'application/json');
-        res.send(json);
+        if (res.finished == false) {
+          res.setHeader('Content-Type', 'application/json');
+          res.send(json);
+        }
         return OIC.deleteTransaction();
       }
 
@@ -34,8 +37,10 @@ var routes = function(OIC) {
       });
       var callback = function(handle, response) {
         var json = OIC.parseD(response.payload);
-        res.setHeader('Content-Type', 'application/json');
-        res.send(json);
+        if (res.finished == false) {
+          res.setHeader('Content-Type', 'application/json');
+          res.send(json);
+        }
         return OIC.deleteTransaction();
       }
       console.log("doDiscover: /oic/d");
@@ -52,8 +57,10 @@ var routes = function(OIC) {
  
       var callback = function(handle, response) {
         var json = OIC.parseRes(response.payload);
-        res.setHeader('Content-Type', 'application/json');
-        res.send(json);
+        if (res.finished == false) {
+          res.setHeader('Content-Type', 'application/json');
+          res.send(json);
+        }
         return OIC.deleteTransaction();
       }
       console.log("doDiscover: /oic/res");
@@ -73,6 +80,10 @@ var routes = function(OIC) {
       var handle = {};
       var callback = null;
 
+      res.setTimeout(timeoutValue, function() {
+        res.status(timeoutStatusCode).end();
+      });
+
       if (req.obs == true) {
         res.setHeader('Content-Type', 'application/json');
 
@@ -83,7 +94,7 @@ var routes = function(OIC) {
 
         var observer = function(handle, response) {
             console.log("OBS: " + req.obs + ", handle: " + handle);
-            if (req.obs == true) {
+            if (req.obs == true && res.finished == false) {
               var json = OIC.parseGet(response.payload);
               res.write(json);
               return OIC.keepTransaction();
@@ -101,11 +112,15 @@ var routes = function(OIC) {
       else {
         callback = function(handle, response) {
           var rc = OIC.doGet(handle, req.url, response.addr, response.connType, function(handle, response) {
-            var json = OIC.parseGet(response.payload);
-            res.setHeader('Content-Type', 'application/json');
-            res.send(json);
-            return OIC.deleteTransaction()});
-
+            if (response.result == 0 && res.finished == false) {
+              var json = OIC.parseGet(response.payload);
+              res.setHeader('Content-Type', 'application/json');
+              res.send(json);
+            } else {
+              res.status(notFoundStatusCode).end();
+            }
+            return OIC.deleteTransaction()
+          });
           return OIC.deleteTransaction();
         }
       }
