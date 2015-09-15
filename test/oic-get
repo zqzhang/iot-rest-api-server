@@ -16,5 +16,4 @@ fi
 
 echo $API_SERVER_HOST":"$API_SERVER_PORT $API_SERVER_URL
 
-curl --noproxy "*" --no-buffer  http://${API_SERVER_HOST}:${API_SERVER_PORT}/api/oic${API_SERVER_URL}
-echo ""
+curl --noproxy "*" -w "\nHTTP: %{http_code}\n" --no-buffer  http://${API_SERVER_HOST}:${API_SERVER_PORT}/api/oic${API_SERVER_URL}
