@@ -7,7 +7,7 @@ exports.init = function() {
   console.log("OCInit: " + result);
   intervalId = setInterval( function() {
     iotivity.OCProcess();
-  }, 100 );  
+  }, 100 );
 }
 
 exports.doDiscover = function(handle, uri, callback) {
@@ -128,7 +128,7 @@ exports.parseD = function(payload) {
     o.di = uuid.unparse(payload.sid);
 
   if (typeof payload.deviceName != "undefined")
-    o.m = payload.deviceName;
+    o.n = payload.deviceName;
 
   if (typeof payload.specVersion != "undefined")
     o.icv = payload.specVersion;
