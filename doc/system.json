@@ -26,10 +26,10 @@
       }
     },
     "totalmem": {
-      "type": "string"
+      "type": "number"
     },
     "freemem": {
-      "type": "string"
+      "type": "number"
     },
     "cpus": {
       "type": "array",
