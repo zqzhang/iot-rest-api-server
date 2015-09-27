@@ -1,0 +1,25 @@
+#!/bin/bash
+
+if test "x${API_SERVER_PORT}x" == "xx"; then
+	API_SERVER_PORT=8000
+fi
+
+if test "x${API_SERVER_HOST}x" == "xx"; then
+	API_SERVER_HOST=localhost
+fi
+
+if test "x$1x" == "xx"; then
+	API_REQUEST_METHOD=""
+else
+	API_REQUEST_METHOD="-X $1"
+fi
+
+if test "x$2x" == "xx"; then
+	API_SERVER_URL=""
+else
+	API_SERVER_URL=$2
+fi
+
+echo $API_SERVER_HOST":"$API_SERVER_PORT $API_REQUEST_METHOD $API_SERVER_URL
+
+curl ${API_REQUEST_METHOD}  --noproxy "*" -w "\nHTTP: %{http_code}\n" --no-buffer  http://${API_SERVER_HOST}:${API_SERVER_PORT}/api/install${API_SERVER_URL}
