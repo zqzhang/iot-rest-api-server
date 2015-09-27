@@ -166,13 +166,44 @@ var routes = function(AppFW) {
       sendResponse(res, req.app);
     })
     .post(function(req, res) {
-      res.json(req.app);
-    })
-    .put(function(req, res) {
-      res.json(req.app);
+      var ps_callback = function(err, stdout, stderr) {
+        if (err)
+          res.status(errorStatusCode).send({ error: 'Failed to start the application.'});
+        else
+          res.status(okStatusCode).end();
+      }
+      AppFW.startApp(req.app[0]["app"], req.app[0]["argv"], ps_callback);
+
+      res.setTimeout(timeoutValue, function() {
+        res.status(okStatusCode).end();
+      });
     })
     .delete(function(req, res) {
-      res.json(req.app);
+      var ps_callback = function(err, stdout, stderr) {
+        var result;
+
+        if (err)
+          res.status(errorStatusCode).send({ error: 'Failed to stop the application.'});
+        else
+          res.status(okStatusCode).end();
+      }
+      AppFW.stopApp(req.app[0]["app"], ps_callback);
+
+      res.setTimeout(timeoutValue, function() {
+        res.status(okStatusCode).end();
+      });
+    })
+    .put(function(req, res) {
+      var ps_callback = function(err, stdout, stderr) {
+        if (err && res.finished == false)
+          res.status(errorStatusCode).send({ error: 'Failed to restart the application.'});
+      }
+      AppFW.stopApp(req.app[0]["app"], ps_callback);
+      AppFW.startApp(req.app[0]["app"], req.app[0]["argv"], ps_callback);
+
+      res.setTimeout(timeoutValue, function() {
+        res.status(okStatusCode).end();
+      });
     });
 
     return router;
