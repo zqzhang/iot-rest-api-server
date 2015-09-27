@@ -2,6 +2,7 @@ var app_fw = require('iot/iot-appfw');
 var child_process = require('child_process');
 
 var launcher = "iot-launch ";
+var installer = " "; //TODO: set the correct path.
 
 exports.listApps = function(all, callback) {
   if (all)
@@ -16,6 +17,11 @@ exports.startApp = function(appId, args, callback) {
 
 exports.stopApp = function(appId, callback) {
   child_process.exec(launcher + "--stop " + appId, callback);
+}
+
+exports.updateApp = function(appId, callback) {
+  // TODO: Fix when installer is ready.
+  //child_process.exec(installer + appId, callback);
 }
 
 exports.extractAppInfo = function(apps, status, allApps, appId) {

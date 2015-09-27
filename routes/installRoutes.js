@@ -39,9 +39,37 @@ var routes = function(AppFW) {
       });
     })
     .post(function(req, res) {
-      var json = {"description": "Update all installed apps", "note": "Not implemented yet."}
-      console.log("POST" + req.path);
-      res.status(201).send(json);
+      var callback = function(id, status, msg, apps) {
+        var error = null, appCount = 0, appList;
+
+        if (status != 0) {
+          error = 'Server failed to process the application request.';
+        } else {
+          appList = AppFW.extractAppInfo(apps, status, true, null);
+          appCount = appList.length ? appList.length : 0;
+
+          if (appCount == 0)
+            error = 'Got list of 0 applications to update.';
+        }
+
+        if (error) {
+          res.status(errorStatusCode).send({ error: error});
+        } else {
+          var ps_callback = function(err, stdout, stderr) {
+            if (err && res.finished == false)
+              res.status(errorStatusCode).send({ error: 'Failed to update one or more applications.'});
+          }
+
+          for (var index = 0 ; index < appCount ; index++) {
+            AppFW.updateApp(appList[index]["app"], ps_callback);
+          }
+        }
+      }
+      AppFW.listApps(true, callback);
+
+      res.setTimeout(timeoutValue, function() {
+        res.status(okStatusCode).end();
+      });
     })
     .put(function(req, res) {
       var json = {"description": "Reinstall all apps", "note": "Not implemented yet."}
