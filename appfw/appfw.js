@@ -1,10 +1,17 @@
 var app_fw = require('iot/iot-appfw');
+var child_process = require('child_process');
+
+var launcher = "iot-launch ";
 
 exports.listApps = function(all, callback) {
   if (all)
     app_fw.ListAllApplications(callback);
   else
     app_fw.ListRunningApplications(callback);
+}
+
+exports.startApp = function(appId, args, callback) {
+  child_process.exec(launcher + appId, callback);
 }
 
 exports.extractAppInfo = function(apps, status, allApps, appId) {
