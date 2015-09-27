@@ -140,14 +140,30 @@ var routes = function(AppFW) {
     });
 
   router.use('/:appId', function(req, res, next) {
-    var app = {"id": req.params.appId, "description": "Single App", "note": "Not implemented yet."}
-    req.app = app;
-    next();
+    var callback = function(id, status, msg, apps) {
+      if (status != 0) {
+        req.error = 'Server failed to process the application request.';
+      } else {
+        req.app = AppFW.extractAppInfo(apps, status, false, req.params.appId);
+        if (req.app.length == 0) {
+          req.error = 'Got list of 0 applications to process the request.';
+        }
+      }
+
+      if (req.error)
+        res.status(errorStatusCode).send({ error: req.error });
+      else
+        next();
+    }
+    if (req.method == "POST")
+      AppFW.listApps(true, callback);
+    else
+      AppFW.listApps(false, callback);
   });
 
   router.route('/:appId')
     .get(function(req, res) {
-      res.json(req.app);
+      sendResponse(res, req.app);
     })
     .post(function(req, res) {
       res.json(req.app);
