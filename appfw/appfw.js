@@ -24,6 +24,11 @@ exports.updateApp = function(appId, callback) {
   //child_process.exec(installer + appId, callback);
 }
 
+exports.uninstallApp = function(appId, callback) {
+  // TODO: Fix when installer is ready.
+  //child_process.exec(installer + appId, callback);
+}
+
 exports.extractAppInfo = function(apps, status, allApps, appId) {
   var result = [];
     for (var i = 0; i < apps.length; i++) {
