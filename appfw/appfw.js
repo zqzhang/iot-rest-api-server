@@ -14,6 +14,10 @@ exports.startApp = function(appId, args, callback) {
   child_process.exec(launcher + appId, callback);
 }
 
+exports.stopApp = function(appId, callback) {
+  child_process.exec(launcher + "--stop " + appId, callback);
+}
+
 exports.extractAppInfo = function(apps, status, allApps, appId) {
   var result = [];
     for (var i = 0; i < apps.length; i++) {
