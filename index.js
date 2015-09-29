@@ -4,7 +4,7 @@ var bodyParser = require('body-parser');
 var util = require('util');
 
 var oic = require('./oic/oic');
-var appfw = {}; //require('iot-appfw');
+var appfw = require('./appfw/appfw');
 
 var app = express();
 app.set('view engine', 'jade');
