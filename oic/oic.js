@@ -1,6 +1,6 @@
 uuid = require('uuid');
 
-var iotivity = require('iotivity/lowlevel');
+var iotivity = require('iotivity-node/lowlevel');
 
 exports.init = function() {
   var result = iotivity.OCInit(null, 0, iotivity.OCMode.OC_CLIENT);
