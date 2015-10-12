@@ -24,7 +24,7 @@ var routes = function(AppFW) {
           appList = AppFW.extractAppInfo(apps, status, true, null);
 
           if (appList.length == 0)
-            error = "Got list of 0 applications running.";
+            error = "Got list of 0 applications installed.";
         }
 
         if (error)
@@ -82,7 +82,7 @@ var routes = function(AppFW) {
           appCount = appList.length ? appList.length : 0;
 
           if (appCount == 0)
-            error = 'Got list of 0 applications to uninstall';
+            error = 'Got list of 0 applications to uninstall.';
         }
 
         if (error) {
@@ -115,7 +115,7 @@ var routes = function(AppFW) {
           appCount = appList.length ? appList.length : 0;
 
           if (appCount == 0)
-            error = 'Got list of 0 applications to reinstall';
+            error = 'Got list of 0 applications to re-install.';
         }
 
         if (error) {
@@ -123,7 +123,7 @@ var routes = function(AppFW) {
         } else {
           var ps_callback = function(err, stdout, stderr) {
             if (err && res.finished == false)
-              res.status(errorStatusCode).send({ error: 'Failed to reinstall one or more applications.'});
+              res.status(errorStatusCode).send({ error: 'Failed to re-install one or more applications.'});
           }
 
           for (var index = 0 ; index < appCount ; index++) {
@@ -192,7 +192,7 @@ var routes = function(AppFW) {
     .put(function(req, res) {
       var ps_callback = function(err, stdout, stderr) {
         if (err && res.finished == false)
-          res.status(errorStatusCode).send({ error: 'Failed to reinstall the application.'});
+          res.status(errorStatusCode).send({ error: 'Failed to re-install the application.'});
       }
       AppFW.reinstallApp(req.app[0]["app"], ps_callback);
 
