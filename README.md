@@ -1,15 +1,12 @@
-# iotos-api-server
+# iot-rest-api-server
 ## Description
-This project provides node.js based API server for IOT OS for REST APIs. 
+This project provides node.js based REST API server accoring to the  OIC (Open Interconnect) core specification. 
 
-The project is very experimentation at the moment and APIs provided are work in progress and subject to massive changes.
-
-This project is part of the meta-iot-web IoT OS Yocto layer.
+The project is experimental at the moment and APIs provided are work in progress and subject to changes.
 
 ## Usage
-In IoT OS the API server should be started automatically once properly integrated. The default port is: 8000.
 
-If you need to start the API server manualy, locate the directory where it is installed and run:
+Start the API server (default port is 8000)
 
 ```node index.js```
 
@@ -65,3 +62,10 @@ See the more detailed API documentation in the chapter above.
 If you are running Chrome and want to see the JSON objects in nicely formated way, install the JSONView extension.
 
 Another great tool for REST API development and testing is Postman, another Chrome extension.
+
+NOTE: if you don't have or want to use the appfw module, you can comment it out in the index.js :
+````
+-var appfw = require('./appfw/appfw');
++var appfw = ""; //require('./appfw/appfw');
+````
+
