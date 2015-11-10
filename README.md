@@ -62,10 +62,3 @@ See the more detailed API documentation in the chapter above.
 If you are running Chrome and want to see the JSON objects in nicely formated way, install the JSONView extension.
 
 Another great tool for REST API development and testing is Postman, another Chrome extension.
-
-NOTE: if you don't have or want to use the appfw module, you can comment it out in the index.js :
-````
--var appfw = require('./appfw/appfw');
-+var appfw = ""; //require('./appfw/appfw');
-````
-
