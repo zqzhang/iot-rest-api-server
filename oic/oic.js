@@ -1,145 +1,59 @@
 uuid = require('uuid');
 
-var iotivity = require('iotivity-node/lowlevel');
-
-exports.init = function() {
-  var result = iotivity.OCInit(null, 0, iotivity.OCMode.OC_CLIENT);
-  console.log("OCInit: " + result);
-  intervalId = setInterval( function() {
-    iotivity.OCProcess();
-  }, 100 );
-}
-
-exports.doDiscover = function(handle, uri, callback) {
-  var rc = iotivity.OCDoResource(
-              handle,
-              iotivity.OCMethod.OC_REST_DISCOVER,
-              uri,
-              null,
-              null,
-              iotivity.OCConnectivityType.CT_DEFAULT,
-              iotivity.OCQualityOfService.OC_HIGH_QOS,
-              callback,
-              null,
-              0);
-  return rc;
-}
-
-exports.doGet = function(handle, uri, destination, connType, callback) {
-  var rc = iotivity.OCDoResource(
-              handle,
-              iotivity.OCMethod.OC_REST_GET,
-              uri,
-              destination,
-              null,
-              connType,
-              iotivity.OCQualityOfService.OC_HIGH_QOS,
-              callback,
-              null,
-              0);
-  return rc;
-}
-
-exports.doObs = function(handle, uri, destination, connType, callback) {
-  var rc = iotivity.OCDoResource(
-              handle,
-              iotivity.OCMethod.OC_REST_OBSERVE,
-              uri,
-              destination,
-              null,
-              connType,
-              iotivity.OCQualityOfService.OC_HIGH_QOS,
-              callback,
-              null,
-              0);
-  return rc;
-}
-
-exports.doPut = function(handle, uri, destination, connType, payload, callback) {
-  var rc = iotivity.OCDoResource(
-              handle,
-              iotivity.OCMethod.OC_REST_PUT,
-              uri,
-              destination,
-              payload,
-              connType,
-              iotivity.OCQualityOfService.OC_HIGH_QOS,
-              callback,
-              null,
-              0);
-  return rc;
-}
-
-exports.doCancel = function(handle) {
-  var rc = iotivity.OCCancel(
-              handle,
-              iotivity.OCQualityOfService.OC_HIGH_QOS,
-              []);
-  return rc;
-}
-
-exports.deleteTransaction = function() {
-  return iotivity.OCStackApplicationResult.OC_STACK_DELETE_TRANSACTION;
-}
-
-exports.keepTransaction = function() {
-  return iotivity.OCStackApplicationResult.OC_STACK_KEEP_TRANSACTION;
-}
-
 exports.parseRes = function(payload) {
-  var result = [];
-  var resources = payload.resources;
-
-  console.log(resources);
-
-  for (var i = 0; i < resources.length; i++) {
-    var o = {};
-    var link = {};
-    var links = [];
-
-    if (typeof resources[i].sid != "undefined")
-      o.di = uuid.unparse(resources[i].sid);
-
-    if (typeof resources[i].uri != "undefined")
-      link.href = resources[i].uri;
-
-    if (typeof resources[i].types[0] != "undefined")
-      link.rt = resources[i].types[0];
-
-    if (typeof resources[i].interfaces[0] != "undefined")
-      link.if = resources[i].interfaces[0];
-
-    links.push(link);
-    o.links = links;
-    result.push(o);
-  }
-  var json = JSON.stringify(result);
-  console.log(json);
-
-  return json;
-}
-
-exports.parseD = function(payload) {
-  var o = {};
-
   console.log(payload);
 
-  if (typeof payload.sid != "undefined")
-    o.di = uuid.unparse(payload.sid);
+  var resource = payload.resource;
+  var o = {}; // resource object according to the OIC core spec.
+  var link = {};
+  var links = [];
 
-  if (typeof payload.deviceName != "undefined")
-    o.n = payload.deviceName;
+  if (typeof resource.sid != "undefined")
+    o.di = uuid.unparse(resource.sid);
 
-  if (typeof payload.specVersion != "undefined")
-    o.icv = payload.specVersion;
+  if (typeof resource.uri != "undefined") {
+    link.href = resource.uri;
+    // NOTE: we add internal id as a fragment since we need it back
+    // on the subsequent request in order to identify the device uniqly
+    link.href = link.href + "?id=" + resource.id;
+  }
 
-  if (typeof payload.dataModelVersion != "undefined")
-    o.dmv = payload.dataModelVersion;
+  // TODO: collect all ...
+  if (typeof resource.types[0] != "undefined")
+    link.rt = resource.types[0];
 
-  var json = JSON.stringify(o);
-  console.log(json);
+  if (typeof resource.interfaces[0] != "undefined")
+    link.if = resource.interfaces[0];
 
-  return json;
+  links.push(link);
+  o.links = links;
+
+  console.log(JSON.stringify(o));
+
+  return o;
+}
+
+exports.parseDevice = function(payload) {
+  console.log(payload);
+
+  var device = payload.device;
+  var o = {};
+
+  if (typeof device.uuid != "undefined")
+    o.di = device.uuid;
+
+  if (typeof device.name != "undefined")
+    o.n = device.name;
+
+  if (typeof device.coreSpecVersion != "undefined")
+    o.icv = device.coreSpecVersion;
+
+  if (typeof device.dataModelVersion != "undefined")
+    o.dmv = device.dataModelVersion;
+
+  console.log(JSON.stringify(o));
+
+  return o;
 }
 
 exports.parseP = function(payload) {
@@ -194,11 +108,16 @@ exports.parseIP = function(addr) {
   return result;
 }
 
-exports.parseGet = function(payload) {
-  var o = payload;
+exports.parseResource = function(payload) {
+  var o = {};
 
-  if (typeof payload != "undefined")
-    console.log(payload);
+  console.log(payload);
+
+  if (typeof payload.uri != "undefined")
+    o.href = payload.uri;
+
+  if (typeof payload.properties != "undefined")
+    o.properties = payload.properties;
 
   var json = JSON.stringify(o);
 

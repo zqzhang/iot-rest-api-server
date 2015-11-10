@@ -1,148 +1,157 @@
 var express = require('express');
-var os = require('os');
+var OIC = require('../oic/oic');
 
-var routes = function(OIC) {
+const RESOURCE_FOUND_EVENT = "resourcefound";
+const RESOURCE_CHANGE_EVENT = "resourcechange";
+const DEVICE_FOUND_EVENT = "devicefound";
+
+const timeoutValue = 5000; // 5s
+const timeoutStatusCode = 504; // Gateway Timeout
+
+const noContentStatusCode = 204; // No content
+const internalErrorStatusCode = 500; // Internal error
+const badRequestStatusCode = 400; // Bad request
+const notFoundStatusCode = 404; // Not found
+
+var routes = function(DEV) {
   var router = express.Router();
-  var timeoutValue = 5000; // 5s
-  var timeoutStatusCode = 504; // Gateway Timeout
-  var notFoundStatusCode = 404; // Not found
+  var discoveredResources = [];
+  var discoveredDevices = [];
 
-  OIC.init();
+  DEV.configure({
+    role: "client",
+    connectionMode: "acked"
+  });
+
+  function onResourceFound(event) {
+    var resource = OIC.parseRes(event);
+    discoveredResources.push(resource);
+  }
+
+  function onDeviceFound(event) {
+    var device = OIC.parseDevice(event);
+    discoveredDevices.push(device);
+  }
 
   router.route('/p')
     .get(function(req, res) {
-      var handle = {};
-
-      res.setTimeout(timeoutValue, function() {
-        res.status(timeoutStatusCode).end();
-      });
-      var callback = function(handle, response) {
-        var json = OIC.parseP(response.payload);
-        if (res.finished == false) {
-          res.setHeader('Content-Type', 'application/json');
-          res.send(json);
-        }
-        return OIC.deleteTransaction();
-      }
-
-      OIC.doDiscover(handle, "/oic/p", callback);
+      res.status(badRequestStatusCode).send("/oic/p not supported.");
     });
 
   router.route('/d')
     .get(function(req, res) {
-      var handle = {};
-
       res.setTimeout(timeoutValue, function() {
-        res.status(timeoutStatusCode).end();
+        DEV.client.removeEventListener(DEVICE_FOUND_EVENT, onDeviceFound);
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify(discoveredDevices));
       });
-      var callback = function(handle, response) {
-        var json = OIC.parseD(response.payload);
-        if (res.finished == false) {
-          res.setHeader('Content-Type', 'application/json');
-          res.send(json);
-        }
-        return OIC.deleteTransaction();
-      }
-      console.log("doDiscover: /oic/d");
-      OIC.doDiscover(handle, "/oic/d", callback);
+
+      console.log("GET %s", req.originalUrl);
+      DEV.client.findDevices().then(function() {
+        // TODO: should we send in-progress back to http-client
+        console.log("Discovering devices for %d seconds.", timeoutValue/1000);
+        discoveredDevices.length = 0;
+        DEV.client.addEventListener(DEVICE_FOUND_EVENT, onDeviceFound);
+      })
+      .catch(function(e) {
+        console.log("Error: " + e.message);
+        res.status(internalErrorStatusCode).send(e.message);
+      });
     });
 
   router.route('/res')
     .get(function(req, res) {
-      var handle = {};
-
       res.setTimeout(timeoutValue, function() {
-        res.status(timeoutStatusCode).end();
+        DEV.client.removeEventListener(RESOURCE_FOUND_EVENT, onResourceFound);
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify(discoveredResources));
       });
- 
-      var callback = function(handle, response) {
-        var json = OIC.parseRes(response.payload);
-        if (res.finished == false) {
-          res.setHeader('Content-Type', 'application/json');
-          res.send(json);
-        }
-        return OIC.deleteTransaction();
-      }
-      console.log("doDiscover: /oic/res");
-      OIC.doDiscover(handle, "/oic/res", callback);
+
+      console.log("GET %s", req.originalUrl);
+      DEV.client.findResources().then(function() {
+        // TODO: should we send in-progress back to http-client
+        console.log("Discovering resources for %d seconds.", timeoutValue/1000);
+        discoveredResources.length = 0;
+        DEV.client.addEventListener(RESOURCE_FOUND_EVENT, onResourceFound);
+      })
+      .catch(function(e) {
+        console.log(e);
+        res.status(internalErrorStatusCode).send(e.message);
+      });
     });
 
-  router.param('resource', function(req, res, next, resource) {
-    if (req.url.match(";obs")) {
-      req.url = req.url.slice(0, -4);
-      req.obs = true;
-    }
-    next();
-  });
-
-  router.route('/:resource(([a-zA-Z0-9/]+)(;obs)?)')
+  router.route('/:resource(([a-zA-Z0-9\.\/\+-]+)(;obs)?)/')
     .get(function(req, res) {
-      var handle = {};
-      var callback = null;
 
-      res.setTimeout(timeoutValue, function() {
-        res.status(timeoutStatusCode).end();
-      });
-
-      if (req.obs == true) {
-        res.setHeader('Content-Type', 'application/json');
-
+      if (typeof req.query.id == "undefined") {
+        res.status(badRequestStatusCode).send("Query parameter \"id\" is missing.");
+        return;
+      }
+      console.log("GET %s", req.originalUrl);
+      if (req.query.obs != "undefined" && req.query.obs == true) {
         req.on('close', function() {
           console.log("Client: close");
-          req.obs = false;
+          req.query.obs = false;
         });
 
-        var observer = function(handle, response) {
-            console.log("OBS: " + req.obs + ", handle: " + handle);
-            if (req.obs == true && res.finished == false) {
-              var json = OIC.parseGet(response.payload);
-              res.write(json);
-              return OIC.keepTransaction();
-            } else {
-              OIC.doCancel(handle);
-              return OIC.deleteTransaction();
-            }
+        function observer(event) {
+          console.log("obs: " + req.query.obs + ", fin: " + res.finished + ", id: " + req.query.id);
+          if (req.query.obs == true && res.finished == false) {
+            var json = OIC.parseResource(event.resource);
+            res.write(json);
+          } else {
+            DEV.client.removeEventListener(RESOURCE_CHANGE_EVENT, observer);
+            DEV.client.cancelObserving(req.query.id);
+          }
         }
+        DEV.client.addEventListener(RESOURCE_CHANGE_EVENT, observer);
 
-        callback = function(handle, response) {
-          var rc = OIC.doObs(handle, req.url, response.addr, response.connType, observer);
-          return OIC.deleteTransaction();
-        }
+        DEV.client.startObserving(req.query.id).then(
+          function(resource) {
+            console.log("Start observing successful: " + req.query.id);
+          },
+          function(e) {
+            res.status(internalErrorStatusCode).send("Resource observing failed: " + e.message);
+          }
+        );
       }
       else {
-        callback = function(handle, response) {
-          var rc = OIC.doGet(handle, req.url, response.addr, response.connType, function(handle, response) {
-            if (response.result == 0 && res.finished == false) {
-              var json = OIC.parseGet(response.payload);
-              res.setHeader('Content-Type', 'application/json');
-              res.send(json);
-            } else {
-              res.status(notFoundStatusCode).end();
-            }
-            return OIC.deleteTransaction()
-          });
-          return OIC.deleteTransaction();
-        }
+        res.setTimeout(timeoutValue, function() {
+          res.status(notFoundStatusCode).send("Resource not found.");
+        });
+
+        DEV.client.retrieveResource(req.query.id).then(
+          function(resource) {
+            var json = OIC.parseResource(resource);
+            res.setHeader('Content-Type', 'application/json');
+            res.send(json);
+          },
+          function(error) {
+            res.status(internalErrorStatusCode).send("Resource retrieve failed: " + e.message);
+        });
       }
-      console.log("doDiscover: /oic/res (for get)");
-      OIC.doDiscover(handle, "/oic/res", callback);
     })
     .put(function(req, res) {
-      var handle = {};
-
-      var callback = function(handle, response) {
-        var payload = {"type":4}
-        payload.values = req.body;
-        var rc = OIC.doPut(handle, req.url, response.addr, response.connType, payload, function(handle, response) {
-          var json = OIC.parseGet(response.payload);
-          res.setHeader('Content-Type', 'application/json');
-          res.send(json);
-          return OIC.deleteTransaction()});
-
-        return OIC.deleteTransaction();
+      if (typeof req.query.id == "undefined") {
+        res.status(badRequestStatusCode).send("Query parameter \"id\" is missing.");
+        return;
       }
 
-      OIC.doDiscover(handle, "/oic/res", callback);
+      res.setTimeout(timeoutValue, function() {
+        res.status(notFoundStatusCode).send("Resource not found.");
+      });
+
+      var payload = {properties: req.body};
+      console.log("PUT %s: %s", req.originalUrl, JSON.stringify(payload));
+      DEV.client.updateResource(req.query.id, payload).then(
+        function() {
+          res.status(noContentStatusCode).send();
+        },
+        function(error) {
+          console.log("Error: " + error.message);
+          res.status(internalErrorStatusCode).send("Resource update failed: " + error.message);
+      });
+
     });
 
   return router;

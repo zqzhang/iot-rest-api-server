@@ -3,8 +3,14 @@ var path = require('path');
 var bodyParser = require('body-parser');
 var util = require('util');
 
-var oic = require('./oic/oic');
-var appfw = require('./appfw/appfw');
+var device = require('iotivity-node')();
+var appfw = "";
+try {
+  appfw = require('./appfw/appfw');
+}
+catch (e) {
+  console.log("No AppFW module: " + e.message);
+}
 
 var app = express();
 app.set('view engine', 'jade');
@@ -31,7 +37,7 @@ app.use('/api/install', installRouter);
 systemRouter = require('./routes/systemRoutes')();
 app.use('/api/system', systemRouter);
 
-oicRouter = require('./routes/oicRoutes')(oic);
+oicRouter = require('./routes/oicRoutes')(device);
 app.use('/api/oic', oicRouter);
 
 app.get('/', function(req, res) {
