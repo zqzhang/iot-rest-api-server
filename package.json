@@ -1,8 +1,8 @@
 {
-  "name": "iotos-api-server",
+  "name": "iot-rest-api-server",
   "version": "0.0.1",
   "description": "Node.js API Server for IoTOS",
-  "repository": "https://github.com:otcshare/iotos-api-server",
+  "repository": "https://github.com:otcshare/iot-rest-api-server",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -13,7 +13,8 @@
     "body-parser": "^1.12.4",
     "express": "^4.12.3",
     "jade": "^1.10.0",
-    "uuid": "^2.0.1"
+    "uuid": "^2.0.1",
+    "iotivity-node": "^1.0.0-0"
   },
   "devDependencies": {
     "gulp": "^3.8.11",
