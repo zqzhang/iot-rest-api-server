@@ -4,7 +4,13 @@ var bodyParser = require('body-parser');
 var util = require('util');
 
 var device = require('iotivity-node')();
-var appfw = ""; //require('./appfw/appfw');
+var appfw = "";
+try {
+  appfw = require('./appfw/appfw');
+}
+catch (e) {
+  console.log("No AppFW module: " + e.message);
+}
 
 var app = express();
 app.set('view engine', 'jade');
