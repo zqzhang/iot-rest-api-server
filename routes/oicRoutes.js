@@ -2,6 +2,7 @@ var express = require('express');
 var OIC = require('../oic/oic');
 
 const RESOURCE_FOUND_EVENT = "resourcefound";
+const RESOURCE_CHANGE_EVENT = "resourcechange";
 const DEVICE_FOUND_EVENT = "devicefound";
 
 const timeoutValue = 5000; // 5s
@@ -79,14 +80,6 @@ var routes = function(DEV) {
       });
     });
 
-  router.param('resource', function(req, res, next, resource) {
-    if (req.url.match(";obs")) {
-      req.url = req.url.slice(0, -4);
-      req.obs = true;
-    }
-    next();
-  });
-
   router.route('/:resource(([a-zA-Z0-9\.\/\+-]+)(;obs)?)/')
     .get(function(req, res) {
 
@@ -94,21 +87,49 @@ var routes = function(DEV) {
         res.status(badRequestStatusCode).send("Query parameter \"id\" is missing.");
         return;
       }
-
-      res.setTimeout(timeoutValue, function() {
-        res.status(notFoundStatusCode).send("Resource not found.");
-      });
-
       console.log("GET %s", req.originalUrl);
-      DEV.client.retrieveResource(req.query.id).then(
-        function(resource) {
-          var json = OIC.parseResource(resource);
-          res.setHeader('Content-Type', 'application/json');
-          res.send(json);
-        },
-        function(error) {
-          res.status(internalErrorStatusCode).send("Resource retrieve failed.");
-      });
+      if (req.query.obs != "undefined" && req.query.obs == true) {
+        req.on('close', function() {
+          console.log("Client: close");
+          req.query.obs = false;
+        });
+
+        function observer(event) {
+          console.log("obs: " + req.query.obs + ", fin: " + res.finished + ", id: " + req.query.id);
+          if (req.query.obs == true && res.finished == false) {
+            var json = OIC.parseResource(event.resource);
+            res.write(json);
+          } else {
+            DEV.client.removeEventListener(RESOURCE_CHANGE_EVENT, observer);
+            DEV.client.cancelObserving(req.query.id);
+          }
+        }
+        DEV.client.addEventListener(RESOURCE_CHANGE_EVENT, observer);
+
+        DEV.client.startObserving(req.query.id).then(
+          function(resource) {
+            console.log("Start observing successful: " + req.query.id);
+          },
+          function(e) {
+            res.status(internalErrorStatusCode).send("Resource observing failed: " + e.message);
+          }
+        );
+      }
+      else {
+        res.setTimeout(timeoutValue, function() {
+          res.status(notFoundStatusCode).send("Resource not found.");
+        });
+
+        DEV.client.retrieveResource(req.query.id).then(
+          function(resource) {
+            var json = OIC.parseResource(resource);
+            res.setHeader('Content-Type', 'application/json');
+            res.send(json);
+          },
+          function(error) {
+            res.status(internalErrorStatusCode).send("Resource retrieve failed: " + e.message);
+        });
+      }
     })
     .put(function(req, res) {
       if (typeof req.query.id == "undefined") {
