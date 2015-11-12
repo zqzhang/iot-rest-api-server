@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 
-var http = require('http');
-var agent = new http.Agent({keepAlive: true});
-
+var proto = null;
+var path = require('path');
+var fs = require('fs');
+var ca = null;
 var commandLineArgs = require('command-line-args');
 
 var cli = commandLineArgs([
@@ -21,11 +22,19 @@ if (cliOptions.help) {
   return;
 }
 
+if (cliOptions.https) {
+	ca = fs.readFileSync(path.join(__dirname, '..', 'config', 'certificate.pem'))
+	proto = require('https');
+}
+else
+	proto = require('http');
+
 var reqOptions = {
 	host: cliOptions.host,
 	port: cliOptions.port,
-	agent: agent,
-	headers: {Connection: "keep-alive"}
+	agent: new proto.Agent({keepAlive: true}),
+	headers: {Connection: "keep-alive"},
+	ca: ca
 }
 
 function findResources(callback) {
@@ -41,7 +50,7 @@ function findResources(callback) {
 			callback(resources);
 		});
 	}
-	var req = http.request(reqOptions, discoveryCallback);
+	var req = proto.request(reqOptions, discoveryCallback);
 
 	req.on('error', function(e) {
 		console.log("HTTP Request error %s", e.message);
@@ -89,7 +98,7 @@ function retrieveResources(uri, callback, obs) {
 			console.log("event: abort");
 		});
 	}
-	http.request(reqOptions, resourceCallback).end();
+	proto.request(reqOptions, resourceCallback).end();
 }
 
 findResources(onResourceFound);
