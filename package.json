@@ -1,7 +1,7 @@
 {
   "name": "iot-rest-api-server",
   "version": "0.0.1",
-  "description": "Node.js API Server for IoTOS",
+  "description": "Node.js REST API Server for IoT",
   "repository": "https://github.com:otcshare/iot-rest-api-server",
   "main": "index.js",
   "scripts": {

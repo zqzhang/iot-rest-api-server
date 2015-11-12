@@ -2,6 +2,7 @@ var express = require('express');
 var path = require('path');
 var bodyParser = require('body-parser');
 var util = require('util');
+var commandLineArgs = require('command-line-args');
 
 var device = require('iotivity-node')();
 var appfw = "";
@@ -11,6 +12,15 @@ try {
 catch (e) {
   console.log("No AppFW module: " + e.message);
 }
+
+var cli = commandLineArgs([
+  { name: 'verbose', alias: 'v', type: Boolean, defaultValue: false },
+  { name: 'port', alias: 'p', type: Number, defaultValue: 8000 },
+  { name: 'https', alias: 's', type: Boolean, defaultValue: false }
+]);
+
+var options = cli.parse();
+console.log(options);
 
 var app = express();
 app.set('view engine', 'jade');
