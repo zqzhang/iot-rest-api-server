@@ -1,11 +1,14 @@
+#!/usr/bin/env node
+
 var http = require('http');
 var agent = new http.Agent({keepAlive: true});
 
 var commandLineArgs = require('command-line-args');
 
 var cli = commandLineArgs([
-  { name: 'help', alias: 'h', type: Boolean, defaultValue: false },
+  { name: 'help', alias: '?', type: Boolean, defaultValue: false },
   { name: 'verbose', alias: 'v', type: Boolean, defaultValue: false },
+  { name: 'host', alias: 'h', type: String, defaultValue: 'localhost' },
   { name: 'port', alias: 'p', type: Number, defaultValue: 8000 },
   { name: 'https', alias: 's', type: Boolean, defaultValue: false },
   { name: 'obs', alias: 'o', type: Boolean, defaultValue: false }
@@ -19,14 +22,14 @@ if (cliOptions.help) {
 }
 
 var reqOptions = {
-	host: 'localhost',
-	port: '8000',
+	host: cliOptions.host,
+	port: cliOptions.port,
 	agent: agent,
 	headers: {Connection: "keep-alive"}
 }
 
 function findResources(callback) {
-	reqOptions.path = "/api/oic/res";	
+	reqOptions.path = "/api/oic/res";
 	var json = "";
 	discoveryCallback = function(res) {
 		res.on('data', function(data) {
@@ -38,7 +41,13 @@ function findResources(callback) {
 			callback(resources);
 		});
 	}
-	http.request(reqOptions, discoveryCallback).end();
+	var req = http.request(reqOptions, discoveryCallback);
+
+	req.on('error', function(e) {
+		console.log("HTTP Request error %s", e.message);
+	});
+
+	req.end();
 }
 
 function onResourceFound(resources) {
