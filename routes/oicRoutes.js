@@ -93,7 +93,7 @@ var routes = function(DEV) {
         res.status(badRequestStatusCode).send("Query parameter \"id\" is missing.");
         return;
       }
-      console.log("GET %s", req.originalUrl);
+      console.log("GET %s (fd: %d)", req.originalUrl, req.socket._handle.fd);
       if (req.query.obs != "undefined" && req.query.obs == true) {
         req.on('close', function() {
           console.log("Client: close");
@@ -101,10 +101,16 @@ var routes = function(DEV) {
         });
 
         function observer(event) {
-          console.log("obs: " + req.query.obs + ", fin: " + res.finished + ", id: " + req.query.id);
+          var fd = (res.socket._handle == null) ? -1 : res.socket._handle.fd;
+          console.log("obs: %d, fin: %s, id: %s, fd: %d",req.query.obs, res.finished, req.query.id, fd);
           if (req.query.obs == true && res.finished == false) {
-            var json = OIC.parseResource(event.resource);
-            res.write(json);
+            // NOTE: this is v1 API shortcomig: observer is a per client not per resource
+            // For v1, we only write back to the socket which has the correct id. Otherwise all
+            // the data is dulicated over all open sockets (requests).
+            if (event.resource.id == req.query.id) {
+              var json = OIC.parseResource(event.resource);
+              res.write(json);
+            }
           } else {
             DEV.client.removeEventListener(RESOURCE_CHANGE_EVENT, observer);
             DEV.client.cancelObserving(req.query.id);
