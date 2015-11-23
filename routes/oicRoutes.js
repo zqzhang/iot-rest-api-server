@@ -47,11 +47,14 @@ var routes = function(DEV) {
       });
 
       console.log("GET %s", req.originalUrl);
+
+      discoveredDevices.length = 0;
+      DEV.client.addEventListener(DEVICE_FOUND_EVENT, onDeviceFound);
+
+      console.log("Discovering devices for %d seconds.", timeoutValue/1000);
       DEV.client.findDevices().then(function() {
         // TODO: should we send in-progress back to http-client
-        console.log("Discovering devices for %d seconds.", timeoutValue/1000);
-        discoveredDevices.length = 0;
-        DEV.client.addEventListener(DEVICE_FOUND_EVENT, onDeviceFound);
+        console.log("findDevices() successful");
       })
       .catch(function(e) {
         console.log("Error: " + e.message);
@@ -68,11 +71,14 @@ var routes = function(DEV) {
       });
 
       console.log("GET %s", req.originalUrl);
+
+      discoveredResources.length = 0;
+      DEV.client.addEventListener(RESOURCE_FOUND_EVENT, onResourceFound);
+
+      console.log("Discovering resources for %d seconds.", timeoutValue/1000);
       DEV.client.findResources().then(function() {
         // TODO: should we send in-progress back to http-client
-        console.log("Discovering resources for %d seconds.", timeoutValue/1000);
-        discoveredResources.length = 0;
-        DEV.client.addEventListener(RESOURCE_FOUND_EVENT, onResourceFound);
+        console.log("findResources() successful");
       })
       .catch(function(e) {
         console.log(e);
