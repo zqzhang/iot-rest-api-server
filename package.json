@@ -13,7 +13,7 @@
     "body-parser": "^1.12.4",
     "command-line-args": "^2.1.1",
     "express": "^4.12.3",
-    "iotivity-node": "^1.0.0-0",
+    "iotivity-node": "^1.0.0-1",
     "jade": "^1.10.0",
     "uuid": "^2.0.1"
   },
