@@ -2,7 +2,7 @@
   "name": "iot-rest-api-server",
   "version": "0.0.1",
   "description": "Node.js API Server for IoTOS",
-  "repository": "https://github.com:otcshare/iot-rest-api-server",
+  "repository": "https://github.com:01org/iot-rest-api-server",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

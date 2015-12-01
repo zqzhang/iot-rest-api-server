@@ -7,7 +7,7 @@ The project is experimental at the moment and APIs provided are work in progress
 ## Install
 
 ```
-git clone https://github.com/otcshare/iot-rest-api-server.git
+git clone https://github.com/01org/iot-rest-api-server.git
 npm install
 ```
 
@@ -67,7 +67,7 @@ See the more detailed API documentation in the chapter above.
 
 ## Tests
 
-The [test](https://github.com/otcshare/iot-rest-api-server/tree/master/test) directory contains the following small test utilities:
+The [test](https://github.com/01org/iot-rest-api-server/tree/master/test) directory contains the following small test utilities:
 
 ### oic-get
 
