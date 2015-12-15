@@ -2,21 +2,50 @@ var express = require('express');
 var path = require('path');
 var bodyParser = require('body-parser');
 var util = require('util');
-
+var commandLineArgs = require('command-line-args');
 var device = require('iotivity-node')();
+var http, https, fs = null;
+
+
+var cli = commandLineArgs([
+  { name: 'help', alias: 'h', type: Boolean, defaultValue: false },
+  { name: 'verbose', alias: 'v', type: Boolean, defaultValue: false },
+  { name: 'port', alias: 'p', type: Number, defaultValue: 8000 },
+  { name: 'https', alias: 's', type: Boolean, defaultValue: false }
+]);
+
+var options = cli.parse();
+
+if (options.help) {
+  console.log(cli.getUsage());
+  return;
+}
+
 var appfw = "";
 try {
   appfw = require('./appfw/appfw');
 }
 catch (e) {
-  console.log("No AppFW module: " + e.message);
+  if (options.verbose)
+    console.log("No AppFW module: " + e.message);
+}
+
+if (options.https) {
+  fs = require('fs');
+  https = require('https');
+
+  var httpsOptions = {
+    key: fs.readFileSync(path.join(__dirname, 'config', 'private.key')),
+    cert: fs.readFileSync(path.join(__dirname, 'config', 'certificate.pem'))
+  };
+}
+else {
+  http = require('http');
 }
 
 var app = express();
 app.set('view engine', 'jade');
 app.set('views', './views')
-
-var port = process.env.PORT || 8000;
 
 // Allow cross origin requests
 app.use(function(req, res, next) {
@@ -41,9 +70,14 @@ oicRouter = require('./routes/oicRoutes')(device);
 app.use('/api/oic', oicRouter);
 
 app.get('/', function(req, res) {
-  res.render('main', {title: "IoT OS API Server", host: req.hostname, port: port});
+  res.render('main', {title: "IoT OS API Server", host: req.hostname, port: options.port});
 });
 
-app.listen(port, function() {
-  console.log('Running on PORT: ' + port);
-})
+if (options.https) {
+  https.createServer(httpsOptions, app).listen(options.port);
+  console.log('Running on https PORT: ' + options.port);
+}
+else {
+  http.createServer(app).listen(options.port);
+  console.log('Running on PORT: ' + options.port);
+}

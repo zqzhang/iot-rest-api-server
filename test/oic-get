@@ -8,6 +8,14 @@ if test "x${API_SERVER_HOST}x" == "xx"; then
 	API_SERVER_HOST=localhost
 fi
 
+if test "x${API_SERVER_HTTPS}x" == "xx"; then
+  API_SERVER_PROTO=http
+  CERT=""
+else
+  API_SERVER_PROTO=https
+  CERT="--cacert ../config/certificate.pem "
+fi
+
 if test "x$1x" == "xx"; then
 	API_SERVER_URL="/a/light"
 else
@@ -16,4 +24,5 @@ fi
 
 echo $API_SERVER_HOST":"$API_SERVER_PORT $API_SERVER_URL
 
-curl --noproxy "*" -w "\nHTTP: %{http_code}\n" --no-buffer  http://${API_SERVER_HOST}:${API_SERVER_PORT}/api/oic${API_SERVER_URL}
+curl --noproxy "*" -w "\nHTTP: %{http_code}\n" --no-buffer ${CERT}\
+${API_SERVER_PROTO}://${API_SERVER_HOST}:${API_SERVER_PORT}/api/oic${API_SERVER_URL}
