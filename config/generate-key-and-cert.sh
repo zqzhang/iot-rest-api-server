@@ -1,3 +1,5 @@
+cd "$(dirname "$0")"
+
 if test "x$1x" == "xx"; then
   FQDN="localhost"
 else
