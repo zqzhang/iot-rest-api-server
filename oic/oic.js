@@ -8,19 +8,15 @@ exports.parseRes = function(payload) {
   var link = {};
   var links = [];
 
-  if (typeof resource.sid != "undefined")
-    o.di = uuid.unparse(resource.sid);
+  if (typeof resource.id.deviceId != "undefined")
+    o.di = resource.id.deviceId;
 
-  if (typeof resource.uri != "undefined") {
-    link.href = resource.uri;
-    // NOTE: we add internal id as a fragment since we need it back
-    // on the subsequent request in order to identify the device uniqly
-    link.href = link.href + "?id=" + resource.id;
-  }
+  if (typeof resource.id.path != "undefined")
+    link.href = resource.id.path;
 
   // TODO: collect all ...
-  if (typeof resource.types[0] != "undefined")
-    link.rt = resource.types[0];
+  if (typeof resource.resourceTypes[0] != "undefined")
+    link.rt = resource.resourceTypes[0];
 
   if (typeof resource.interfaces[0] != "undefined")
     link.if = resource.interfaces[0];
