@@ -1,4 +1,4 @@
-# iot-rest-api-server
+# IoT REST API Server
 ## Description
 This project provides node.js based REST API server accoring to the  OIC (Open Interconnect) core specification. 
 
@@ -14,9 +14,39 @@ npm install
 
 ## Usage
 
-Start the API server (default port is 8000)
+Start the API server
 
 ```node index.js```
+
+### Command Line Options
+
+The command line options 
+
+```
+node index.js -h
+
+Options
+
+  -h, --help           
+  -v, --verbose        
+  -p, --port number    
+  -s, --https          
+  ```
+#### verbose
+More verbose logging
+#### port 
+Listen to specifc port. Default is 8000
+#### https
+Use https with TLS instead of plain http. In order to use https the `config` directory needs to contain the following certificate and private key files (in PEM format)
+
+```
+certificate.pem
+private.key
+```
+
+You can use the `config/generate-key-and-cert.sh` to generate the files for testing only purposes. The certificate is self signed and browsers do not regognise it so you will get warnings. 
+
+The recomemnded way to use the https is to get proper certificate from know certificate authority and corresponding private key and place those to the `config` directory.
 
 ## API End Points
 
