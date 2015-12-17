@@ -4,6 +4,8 @@ This project provides node.js based REST API server accoring to the  OIC (Open I
 
 The project is experimental at the moment and APIs provided are work in progress and subject to changes.
 
+![Overview](img/iot-rest-api-server.png)
+
 ## Install
 
 ```
