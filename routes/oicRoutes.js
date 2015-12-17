@@ -3,6 +3,7 @@ var OIC = require('../oic/oic');
 
 const RESOURCE_FOUND_EVENT = "resourcefound";
 const RESOURCE_CHANGE_EVENT = "resourcechange";
+const UPDATE_EVENT = "update";
 const DEVICE_FOUND_EVENT = "devicefound";
 
 const timeoutValue = 5000; // 5s
@@ -65,7 +66,7 @@ var routes = function(DEV) {
   router.route('/res')
     .get(function(req, res) {
       res.setTimeout(timeoutValue, function() {
-        DEV.client.removeEventListener(RESOURCE_FOUND_EVENT, onResourceFound);
+        DEV.removeEventListener(RESOURCE_FOUND_EVENT, onResourceFound);
         res.setHeader('Content-Type', 'application/json');
         res.send(JSON.stringify(discoveredResources));
       });
@@ -73,10 +74,10 @@ var routes = function(DEV) {
       console.log("GET %s", req.originalUrl);
 
       discoveredResources.length = 0;
-      DEV.client.addEventListener(RESOURCE_FOUND_EVENT, onResourceFound);
+      DEV.addEventListener(RESOURCE_FOUND_EVENT, onResourceFound);
 
       console.log("Discovering resources for %d seconds.", timeoutValue/1000);
-      DEV.client.findResources().then(function() {
+      DEV.findResources().then(function() {
         // TODO: should we send in-progress back to http-client
         console.log("findResources() successful");
       })
@@ -89,62 +90,43 @@ var routes = function(DEV) {
   router.route('/:resource(([a-zA-Z0-9\.\/\+-]+)(;obs)?)/')
     .get(function(req, res) {
 
-      if (typeof req.query.id == "undefined") {
+      if (typeof req.query.di == "undefined") {
         res.status(badRequestStatusCode).send("Query parameter \"id\" is missing.");
         return;
       }
       console.log("GET %s (fd: %d)", req.originalUrl, req.socket._handle.fd);
-      if (req.query.obs != "undefined" && req.query.obs == true) {
-        req.on('close', function() {
-          console.log("Client: close");
-          req.query.obs = false;
-        });
 
-        function observer(event) {
-          var fd = (res.socket._handle == null) ? -1 : res.socket._handle.fd;
-          console.log("obs: %d, fin: %s, id: %s, fd: %d",req.query.obs, res.finished, req.query.id, fd);
-          if (req.query.obs == true && res.finished == false) {
-            // NOTE: this is v1 API shortcomig: observer is a per client not per resource
-            // For v1, we only write back to the socket which has the correct id. Otherwise all
-            // the data is dulicated over all open sockets (requests).
-            if (event.resource.id == req.query.id) {
-              var json = OIC.parseResource(event.resource);
-              res.write(json);
-            }
-          } else {
-            DEV.client.removeEventListener(RESOURCE_CHANGE_EVENT, observer);
-            DEV.client.cancelObserving(req.query.id);
-          }
+      function observer(event) {
+        var fd = (res.socket._handle == null) ? -1 : res.socket._handle.fd;
+        console.log("obs: %d, fin: %s, id: %s, fd: %d",req.query.obs, res.finished, req.query.di, fd);
+        if (req.query.obs == true && res.finished == false) {
+          var json = OIC.parseResource(event.resource);
+          res.write(json);
+        } else {
+          event.resource.removeEventListener(UPDATE_EVENT, observer);
         }
-        DEV.client.addEventListener(RESOURCE_CHANGE_EVENT, observer);
-
-        DEV.client.startObserving(req.query.id).then(
-          function(resource) {
-            console.log("Start observing successful: " + req.query.id);
-          },
-          function(e) {
-            res.status(internalErrorStatusCode).send("Resource observing failed: " + e.message);
-          }
-        );
       }
-      else {
-        res.setTimeout(timeoutValue, function() {
-          res.status(notFoundStatusCode).send("Resource not found.");
-        });
 
-        DEV.client.retrieveResource(req.query.id).then(
-          function(resource) {
+      DEV.retrieveResource({deviceId: req.query.di, path: req.path}).then(
+        function(resource) {
+          if (req.query.obs != "undefined" && req.query.obs == true) {
+            req.on('close', function() {
+              console.log("Client: close");
+              req.query.obs = false;
+            });
+            resource.addEventListener(UPDATE_EVENT, observer);
+          } else {
             var json = OIC.parseResource(resource);
             res.setHeader('Content-Type', 'application/json');
             res.send(json);
-          },
-          function(error) {
-            res.status(internalErrorStatusCode).send("Resource retrieve failed: " + e.message);
-        });
-      }
+          }
+        },
+        function(error) {
+          res.status(internalErrorStatusCode).send("Resource retrieve failed: " + e.message);
+      });
     })
     .put(function(req, res) {
-      if (typeof req.query.id == "undefined") {
+      if (typeof req.query.di == "undefined") {
         res.status(badRequestStatusCode).send("Query parameter \"id\" is missing.");
         return;
       }
@@ -154,8 +136,12 @@ var routes = function(DEV) {
       });
 
       var payload = {properties: req.body};
-      console.log("PUT %s: %s", req.originalUrl, JSON.stringify(payload));
-      DEV.client.updateResource(req.query.id, payload).then(
+      var resource = {
+        id: {deviceId: req.query.di, path: req.path},
+        properties: req.body
+      };
+      console.log("PUT %s: %s", req.originalUrl, JSON.stringify(resource));
+      DEV.updateResource(resource).then(
         function() {
           res.status(noContentStatusCode).send();
         },
@@ -163,7 +149,6 @@ var routes = function(DEV) {
           console.log("Error: " + error.message);
           res.status(internalErrorStatusCode).send("Resource update failed: " + error.message);
       });
-
     });
 
   return router;

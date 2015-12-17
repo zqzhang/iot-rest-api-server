@@ -65,13 +65,13 @@ function onResourceFound(resources) {
 	for (var i = 0; i < resources.length; i++) {
 		var uri = resources[i].links[0].href;
 		console.log("%s : %s", resources[i].di, uri);
-		retrieveResources(uri, onResource, cliOptions.obs)
+		retrieveResources(uri + "?di=" + resources[i].di, onResource, cliOptions.obs)
 	}
 }
 
 function onResource(resource) {
 	console.log("--- onResource:");
-	console.log("%s : %s", resource.href, JSON.stringify(resource.properties));
+	console.log(resource)
 }
 
 function retrieveResources(uri, callback, obs) {
