@@ -104,9 +104,13 @@ The [test](https://github.com/01org/iot-rest-api-server/tree/master/test) direct
 Send HTTP GET to ```/api/oic```endpoint. Environment variables API_SERVER_HOST and API_SERVER_PORT are used to construct the authority part of the URL.
 
 ````
-API_SERVER_HOST=10.211.55.3 API_SERVER_PORT=8080 ./test/oic-get /res 
-./test/oic-get <href-from-the-above-discovery>
-./test/oic-get <href-from-the-above-discovery>&obs=1 #start observing
+export API_SERVER_HOST=10.211.55.3
+# Discover
+./test/oic-get /res
+# Retrieve (href and di are from the discovery above)
+./test/oic-get <href>?di=<di>
+# Observe
+./test/oic-get <href>?di=<di>&obs=1
 ```
 
 ### oic-put
@@ -114,7 +118,8 @@ API_SERVER_HOST=10.211.55.3 API_SERVER_PORT=8080 ./test/oic-get /res
 Send HTTP PUT to ```/api/oic```endpoint. Environment variables API_SERVER_HOST and API_SERVER_PORT are used to construct the authority part of the URL. First parameter is ``ùri``` from the discover (```/res```) and second is JASON files with the properties that are being set.
 
 ````
-API_SERVER_HOST=10.211.55.3 API_SERVER_PORT=8080 ./test/oic-put  <href-from-the-above-discovery> <json-values-file-name>
+API_SERVER_HOST=10.211.55.3
+./test/oic-put  <href>?di=<di> <file-name-for-body>
 ```
 
 ### oic-api-tester
