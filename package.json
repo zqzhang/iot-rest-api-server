@@ -15,6 +15,7 @@
     "express": "^4.12.3",
     "iotivity-node": "^1.0.0-1",
     "jade": "^1.10.0",
+    "systemd": "^0.2.6",
     "uuid": "^2.0.1"
   },
   "devDependencies": {
