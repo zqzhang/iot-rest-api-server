@@ -2,6 +2,7 @@ var express = require('express');
 var path = require('path');
 var bodyParser = require('body-parser');
 var util = require('util');
+var systemd = require('systemd');
 var commandLineArgs = require('command-line-args');
 var device = require('iotivity-node')();
 var http, https, fs = null;
@@ -73,11 +74,13 @@ app.get('/', function(req, res) {
   res.render('main', {title: "IoT OS API Server", host: req.hostname, port: options.port});
 });
 
+var port = process.env.LISTEN_PID > 0 ? 'systemd' : options.port;
+
 if (options.https) {
-  https.createServer(httpsOptions, app).listen(options.port);
-  console.log('Running on https PORT: ' + options.port);
+  https.createServer(httpsOptions, app).listen(port);
+  console.log('Running on https PORT: ' + port);
 }
 else {
-  http.createServer(app).listen(options.port);
-  console.log('Running on PORT: ' + options.port);
+  http.createServer(app).listen(port);
+  console.log('Running on PORT: ' + port);
 }
