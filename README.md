@@ -9,7 +9,9 @@ The project is experimental at the moment and APIs provided are work in progress
 ## Install
 
 ```
+npm install node-gyp -g
 git clone https://github.com/01org/iot-rest-api-server.git
+cd iot-rest-api-server
 npm install
 ```
 
