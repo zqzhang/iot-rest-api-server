@@ -122,7 +122,7 @@ var routes = function(DEV) {
           }
         },
         function(error) {
-          res.status(internalErrorStatusCode).send("Resource retrieve failed: " + e.message);
+          res.status(notFoundStatusCode).send("Resource retrieve failed: " + error.message);
       });
     })
     .put(function(req, res) {
@@ -147,7 +147,7 @@ var routes = function(DEV) {
         },
         function(error) {
           console.log("Error: " + error.message);
-          res.status(internalErrorStatusCode).send("Resource update failed: " + error.message);
+          res.status(notFoundStatusCode).send("Resource update failed: " + error.message);
       });
     });
 
