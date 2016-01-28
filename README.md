@@ -78,16 +78,9 @@ For example
 
 The ```.html``` file can be then opened by a browser. The ```.html```file contains the full documentation of the REST API including all the REST methods (GET, POST, DELETE, etc) supported, query parameters (like ?id=foo) and the JSON formats in each API.
 
-## Test UI
-The root (```/```) contains a simple UI which allows the user to use the REST APIs directly from the device. 
-
 ## Examples
 
 The following examples assumes your IoT OS enabled device runs on IP address: 192.168.0.1
-
-Open the test UI from your browser:
-
-http://192.168.0.1:8000/
 
 Get the system status:
 
