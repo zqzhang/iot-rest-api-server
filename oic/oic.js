@@ -1,5 +1,3 @@
-uuid = require('uuid');
-
 exports.parseRes = function(payload) {
   console.log(payload);
 
