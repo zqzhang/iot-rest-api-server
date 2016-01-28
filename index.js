@@ -45,8 +45,6 @@ else {
 }
 
 var app = express();
-app.set('view engine', 'jade');
-app.set('views', './views')
 
 // Allow cross origin requests
 app.use(function(req, res, next) {
@@ -69,10 +67,6 @@ app.use('/api/system', systemRouter);
 
 oicRouter = require('./routes/oicRoutes')(device);
 app.use('/api/oic', oicRouter);
-
-app.get('/', function(req, res) {
-  res.render('main', {title: "IoT OS API Server", host: req.hostname, port: options.port});
-});
 
 var port = process.env.LISTEN_PID > 0 ? 'systemd' : options.port;
 
