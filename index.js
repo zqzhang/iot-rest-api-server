@@ -3,22 +3,30 @@ var path = require('path');
 var bodyParser = require('body-parser');
 var util = require('util');
 var systemd = require('systemd');
-var commandLineArgs = require('command-line-args');
 var device = require('iotivity-node')();
 var http, https, fs = null;
+var argv = require('minimist')(process.argv.slice(2));
 
+const usage = "usage: node index.js [options]\n" +
+"options: \n" +
+"  -h, --help \n" +
+"  -v, --verbose \n" +
+"  -p, --port <number>\n" +
+"  -s, --https \n";
 
-var cli = commandLineArgs([
-  { name: 'help', alias: 'h', type: Boolean, defaultValue: false },
-  { name: 'verbose', alias: 'v', type: Boolean, defaultValue: false },
-  { name: 'port', alias: 'p', type: Number, defaultValue: 8000 },
-  { name: 'https', alias: 's', type: Boolean, defaultValue: false }
-]);
+if (argv.h == true || argv.help == true) {
+  console.log(usage);
+  return;
+}
 
-var options = cli.parse();
+var port = 8000; /* default port */
+if (typeof argv.p != "undefined")
+  port = argv.p;
+else if (typeof argv.port != "undefined")
+  port = argv.port;
 
-if (options.help) {
-  console.log(cli.getUsage());
+if (Number.isInteger(port) == false) {
+  console.log(usage);
   return;
 }
 
@@ -27,11 +35,11 @@ try {
   appfw = require('./appfw/appfw');
 }
 catch (e) {
-  if (options.verbose)
+  if (argv.v == true || argv.verbose == true)
     console.log("No AppFW module: " + e.message);
 }
 
-if (options.https) {
+if (argv.s == true || argv.https == true) {
   fs = require('fs');
   https = require('https');
 
@@ -68,9 +76,9 @@ app.use('/api/system', systemRouter);
 oicRouter = require('./routes/oicRoutes')(device);
 app.use('/api/oic', oicRouter);
 
-var port = process.env.LISTEN_PID > 0 ? 'systemd' : options.port;
+port = process.env.LISTEN_PID > 0 ? 'systemd' : port;
 
-if (options.https) {
+if (argv.s == true || argv.https == true) {
   https.createServer(httpsOptions, app).listen(port);
   console.log('Running on https PORT: ' + port);
 }
