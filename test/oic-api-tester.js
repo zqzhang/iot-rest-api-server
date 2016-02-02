@@ -4,25 +4,49 @@ var proto = null;
 var path = require('path');
 var fs = require('fs');
 var ca = null;
-var commandLineArgs = require('command-line-args');
+var argv = require('minimist')(process.argv.slice(2));
 
-var cli = commandLineArgs([
-  { name: 'help', alias: '?', type: Boolean, defaultValue: false },
-  { name: 'verbose', alias: 'v', type: Boolean, defaultValue: false },
-  { name: 'host', alias: 'h', type: String, defaultValue: 'localhost' },
-  { name: 'port', alias: 'p', type: Number, defaultValue: 8000 },
-  { name: 'https', alias: 's', type: Boolean, defaultValue: false },
-  { name: 'obs', alias: 'o', type: Boolean, defaultValue: false }
-]);
+const usage = "usage: node oic-api-tester.js [options]\n" +
+"options: \n" +
+"  -?, --help \n" +
+"  -v, --verbose \n" +
+"  -h, --host <string>\n" +
+"  -p, --port <number>\n" +
+"  -s, --https \n" +
+"  -o, --obs \n";
 
-var cliOptions = cli.parse();
-
-if (cliOptions.help) {
-  console.log(cli.getUsage());
+if (argv.h == true || argv.help == true) {
+  console.log(usage);
   return;
 }
 
-if (cliOptions.https) {
+var obs = false;
+if (argv.o == true || argv.obs == true)
+	obs = true
+
+var port = 8000; /* default port */
+if (typeof argv.p != "undefined")
+  port = argv.p;
+else if (typeof argv.port != "undefined")
+  port = argv.port;
+
+if (Number.isInteger(port) == false) {
+  console.log(usage);
+  return;
+}
+
+var host = "localhost"; /* default host */
+if (typeof argv.h != "undefined")
+  host = argv.h;
+else if (typeof argv.host != "undefined")
+  host = argv.host;
+
+if (typeof host != "string") {
+  console.log(usage);
+  return;
+}
+
+if (argv.s == true || argv.https == true) {
 	ca = fs.readFileSync(path.join(__dirname, '..', 'config', 'certificate.pem'))
 	proto = require('https');
 }
@@ -30,8 +54,8 @@ else
 	proto = require('http');
 
 var reqOptions = {
-	host: cliOptions.host,
-	port: cliOptions.port,
+	host: host,
+	port: port,
 	agent: new proto.Agent({keepAlive: true}),
 	headers: {Connection: "keep-alive"},
 	ca: ca
@@ -65,7 +89,7 @@ function onResourceFound(resources) {
 	for (var i = 0; i < resources.length; i++) {
 		var uri = resources[i].links[0].href;
 		console.log("%s : %s", resources[i].di, uri);
-		retrieveResources(uri + "?di=" + resources[i].di, onResource, cliOptions.obs)
+		retrieveResources(uri + "?di=" + resources[i].di, onResource, obs)
 	}
 }
 
@@ -74,15 +98,15 @@ function onResource(resource) {
 	console.log(resource)
 }
 
-function retrieveResources(uri, callback, obs) {
+function retrieveResources(uri, callback, observe) {
 	reqOptions.path = "/api/oic" + uri;
-	if (obs) {
+	if (observe) {
 		reqOptions.path += "&obs=1";
 	}
 	var json = "";
 	resourceCallback = function(res) {
 		res.on('data', function(data) {
-			if (obs) {
+			if (observe) {
 				callback(JSON.parse(data));
 			}
 			else {
