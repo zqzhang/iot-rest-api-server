@@ -115,14 +115,21 @@ function retrieveResources(uri, callback, observe) {
 		});
 
 		res.on('end', function() {
-			callback(JSON.parse(json));
+			if (json)
+			    callback(JSON.parse(json));
 		});
 
 		res.on('abort', function() {
 			console.log("event: abort");
 		});
 	}
-	proto.request(reqOptions, resourceCallback).end();
+	var req = proto.request(reqOptions, resourceCallback);
+
+	req.on('error', function(e) {
+	    console.log("HTTP Request error: %s", e.message);
+	});
+
+	req.end();
 }
 
 findResources(onResourceFound);
