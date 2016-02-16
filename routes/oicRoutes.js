@@ -42,7 +42,7 @@ var routes = function(DEV) {
   router.route('/d')
     .get(function(req, res) {
       res.setTimeout(timeoutValue, function() {
-        DEV.client.removeEventListener(DEVICE_FOUND_EVENT, onDeviceFound);
+        DEV.removeEventListener(DEVICE_FOUND_EVENT, onDeviceFound);
         res.setHeader('Content-Type', 'application/json');
         res.send(JSON.stringify(discoveredDevices));
       });
@@ -50,10 +50,10 @@ var routes = function(DEV) {
       console.log("GET %s", req.originalUrl);
 
       discoveredDevices.length = 0;
-      DEV.client.addEventListener(DEVICE_FOUND_EVENT, onDeviceFound);
+      DEV.addEventListener(DEVICE_FOUND_EVENT, onDeviceFound);
 
       console.log("Discovering devices for %d seconds.", timeoutValue/1000);
-      DEV.client.findDevices().then(function() {
+      DEV.findDevices().then(function() {
         // TODO: should we send in-progress back to http-client
         console.log("findDevices() successful");
       })
