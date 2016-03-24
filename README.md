@@ -56,10 +56,6 @@ The recomemnded way to use the https is to get proper certificate from know cert
 
 /api/system
 
-/api/apps
-
-/api/install
-
 /api/oic
 
 ## API documentation
